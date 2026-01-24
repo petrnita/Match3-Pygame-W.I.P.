@@ -1,0 +1,1 @@
+This is a basic version without any unnecessary upgrades or extra features. I would be very grateful for any feedback or comments regarding the code. At the same time, I’d like to point out that the entire game algorithm is my own invention and I’m sure it can be improved. I'll explain any confusing parts of the code in response to your comments. Thank you for all your reactions.
