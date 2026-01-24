@@ -1,8 +1,6 @@
-import pygame
-from pygame import Surface
 from consts import *
+from pygame import Surface
 
-pygame.init()
 
 class ScreenLayout():
     def __init__(self):

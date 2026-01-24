@@ -1,11 +1,7 @@
-import pygame
+from consts import *
 from pygame import Surface
 from pygame.sprite import Sprite, GroupSingle
-from pygame.math import Vector2 as vec
-from consts import *
 
-pygame.init()
-    
 
 class BoardPosition():
     def __init__(self, pos: vec, tile_size: vec, offset: vec):

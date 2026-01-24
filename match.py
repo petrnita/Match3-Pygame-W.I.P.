@@ -1,4 +1,3 @@
-from pygame.math import Vector2 as vec
 from consts import *
 from graphic import Kill_Gem
 

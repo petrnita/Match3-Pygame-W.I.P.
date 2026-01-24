@@ -1,5 +1,5 @@
 from pygame.sprite import GroupSingle
-from pygame.math import Vector2 as vec
+from consts import *
 from graphic import Select
 
 class Select_Gem():

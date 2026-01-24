@@ -1,9 +1,7 @@
-import pygame
+from consts import *
 from pygame import Surface, Rect
 from pygame.sprite import Sprite, Group, GroupSingle
-from pygame.math import Vector2 as vec
 from random import choice
-from consts import *
 from screen_data import ScreenLayout
 from graphic import ImageSheet
 from resources import Mouse_Pointer
@@ -12,8 +10,6 @@ from swap_gem import Swap_Gem
 from match import Match
 from graphic import Swap_Dirs
 from resources import BoardPosition
-
-pygame.init()
 
 
 class Gem(Sprite):

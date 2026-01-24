@@ -1,10 +1,8 @@
-import pygame, sys
-from pygame.math import Vector2 as vec
 from consts import *
+import sys
 from screen_data import ScreenLayout
 from game_assets import Board_Manager
 
-pygame.init()
 
 class GameManager():
     

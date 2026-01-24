@@ -1,11 +1,8 @@
-import pygame
+from consts import *
 from pygame import Surface, Rect
 from pygame.sprite import Sprite, Group, GroupSingle
-from pygame.math import Vector2 as vec
-from consts import *
 from resources import BoardPosition
 
-pygame.init()
 
 class ImageSheet():
     def __init__(self, sheet_img: Surface, frame_size: vec):

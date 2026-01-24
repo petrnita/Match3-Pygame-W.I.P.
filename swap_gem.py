@@ -1,7 +1,5 @@
-import pygame
 from consts import *
 
-pygame.mixer.init()
 
 class Swap_Gem():
     def __init__(self, board_manager):
