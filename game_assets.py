@@ -130,7 +130,7 @@ class Gem(Sprite):
 class Create_Board():
     def __init__(self, board_manager,
                  gems_group: Group):
-        self._gems_sheet = ImageSheet(GEM_SHEET_IMAGE, GEM_SIZE)
+        self._gems_sheet = ImageSheet(GEMS_IMAGE, GEM_SIZE)
         self._size: vec = GAME_BOARD_SIZE
         self._board_manager = board_manager
         self._nr_of_gems = GAME_NUMBER_OF_GEMS

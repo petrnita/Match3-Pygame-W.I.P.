@@ -8,9 +8,8 @@ from resources import BoardPosition
 pygame.init()
 
 class ImageSheet():
-
-    def __init__(self, sheet_img: str, frame_size: vec):
-        self._sheet_img: Surface = pygame.image.load(sheet_img)
+    def __init__(self, sheet_img: Surface, frame_size: vec):
+        self._sheet_img: Surface = sheet_img
         self._frame_size: vec = frame_size
         self._sheet = []
         self._frames = self._sheet_img.get_width() // int(self._frame_size.x)

@@ -12,12 +12,8 @@ class GameManager():
     def __init__(self):
         self.screen_layout: ScreenLayout = ScreenLayout()
         self.clock = pygame.time.Clock()
-        self.load_gfx()
         self.gems_group = pygame.sprite.Group()
         self.board_manager = Board_Manager(self.gems_group, self.screen_layout)
-
-    def load_gfx(self):
-        self.gems = ImageSheet('gfx/gems.png', vec(96, 96))
 
     def paint_screen(self):
         self.screen_layout.screen.blit(BACKGROUND, (0, 0))
