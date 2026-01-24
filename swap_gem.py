@@ -1,5 +1,4 @@
 import pygame
-from pygame.mixer import Sound
 from consts import *
 
 pygame.mixer.init()

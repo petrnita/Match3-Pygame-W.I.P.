@@ -2,7 +2,6 @@ import pygame, sys
 from pygame.math import Vector2 as vec
 from consts import *
 from screen_data import ScreenLayout
-from graphic import ImageSheet
 from game_assets import Board_Manager
 
 pygame.init()
