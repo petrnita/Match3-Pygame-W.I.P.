@@ -52,4 +52,5 @@ class GameManager():
 if __name__ == '__main__':
     game_manager: GameManager = GameManager()
     game_manager.main_loop()
+    pygame.quit()
     sys.exit()
