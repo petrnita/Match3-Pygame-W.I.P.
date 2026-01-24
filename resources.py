@@ -4,7 +4,7 @@ from pygame.sprite import Sprite, GroupSingle
 
 
 class BoardPosition():
-    def __init__(self, pos: vec, tile_size: vec, offset: vec):
+    def __init__(self, pos: vec, tile_size: vec, offset: vec=vec()):
         self._pos: vec = pos
         self._tile_size: vec = tile_size
         self._offset: vec = offset
@@ -17,6 +17,7 @@ class BoardPosition():
     @pos.setter
     def pos(self, value: vec):
         self._pos = value
+        self._gfx_pos = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
 
     @property
     def tile_size(self) -> int:
@@ -29,10 +30,6 @@ class BoardPosition():
     @property
     def gfx_pos(self) -> vec:
         return vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
-    
-    @gfx_pos.setter
-    def gfx_pos(self, value: vec):
-        self._gfx_pos = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
     
     @property
     def offset(self) -> vec:
