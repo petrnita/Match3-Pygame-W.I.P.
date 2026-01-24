@@ -1,5 +1,6 @@
 import pygame
 from pygame.mixer import Sound
+from consts import *
 
 pygame.mixer.init()
 
@@ -33,7 +34,7 @@ class Swap_Gem():
     def swap(self, sound: str=None):
         self._swaping = not self._swaping
         if sound != None:
-            Sound(sound).play()
+            SND_SWAP_BACK.play()
         sel1 = (int(self._gem1.bpos.pos.x), int(self._gem1.bpos.pos.y))
         sel2 = (int(self._gem2.bpos.pos.x), int(self._gem2.bpos.pos.y))
         self._board_manager.board.gems[sel1[0]][sel1[1]], self._board_manager.board.gems[sel2[0]][sel2[1]] = self._board_manager.board.gems[sel2[0]][sel2[1]], self._board_manager.board.gems[sel1[0]][sel1[1]]
