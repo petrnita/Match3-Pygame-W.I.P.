@@ -31,6 +31,7 @@ class Gem(Sprite):
         self._direction: vec = vec()
         self._velocity: vec = self._direction * self._speed
         self._end_moving: bool = True
+        self._ready = True
         self._dist: int = 0
         self._is_falling: bool = False
         self._state: str = 'idle'
@@ -62,6 +63,10 @@ class Gem(Sprite):
     @property
     def end_moving(self) -> bool:
         return self._end_moving
+    
+    @property
+    def ready(self) -> bool:
+        return self._ready
 
     def change_pos(self):
         self._direction = vec.normalize(self._new_bpos.pos - self._bpos.pos)
@@ -89,6 +94,7 @@ class Gem(Sprite):
         self._new_bpos.pos = self._bpos.pos + vec(0, dist)
         self._board_manager.match_gems.add_to_matching(self)
         self._is_falling = True
+        self._ready = False
         self.change_pos()
         self._state = 'fall'
 
@@ -120,9 +126,9 @@ class Gem(Sprite):
         self._bpos.pos = self._new_bpos.pos.copy()
         self._end_moving = True
         self._board_manager.board.gems[int(self._bpos.pos.x)][int(self._bpos.pos.y)] = self
+        self._ready  = True
         self._is_falling = False
         self.reset_state()
-
 
 class Create_Board():
     def __init__(self, board_manager,
@@ -180,6 +186,8 @@ class Board_Manager():
         self._match_gems: Match = Match(self)
         self._overs: list[Gem] = list()
         self._possibles: bool = False
+        self._gems_ready = False
+        self.debug_rect: list[Rect] = []
 
     @property
     def board(self) -> Create_Board:
@@ -204,11 +212,16 @@ class Board_Manager():
     @property
     def match_gems(self) -> Match:
         return self._match_gems
+    
+    @property
+    def gems_are_moving(self) -> bool:
+        return self._gems_are_moving
 
     def _detect_pointer_with_gem_collision(self, events, game_status):
-        if not self._check_moving_of_gems(self._match_gems.set_matching): return
 
-        gem = None
+        if not self._gems_ready: return
+
+        gem: Gem = None
         for _gem in self._gems_group:
             if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - BOARD.OFFSET)):
                 gem = _gem
@@ -240,13 +253,25 @@ class Board_Manager():
                         self._swapdir_group.empty()
 
     def _check_moving_of_gems(self, gems: set[Gem]) -> bool:
-        if len(gems) == 0: return True
+        if len(gems) == 0: return False
         for gem in gems:
             if not gem.end_moving:
-                return False
-        return True
+                return True
+        return False
+    
+    def check_gems_ready(self) -> bool:
+        ret = True
+        for gem in self._gems_group:
+            if gem.ready == False:
+                self.debug_rect.append(gem.rect)
+                ret = False
+
+        return ret
     
     def update(self, events, dt, game_status):
+
+        self._gems_ready = self.check_gems_ready()
+
         self._detect_pointer_with_gem_collision(events, game_status)
 
         self._select_gem.select_group.update(dt)
@@ -261,7 +286,7 @@ class Board_Manager():
             self._swap_gems.swap(None)
 
         if self._swap_gems.swaping:
-            if self._check_moving_of_gems([self._swap_gems.gem1, self._swap_gems.gem2]):
+            if not self._check_moving_of_gems([self._swap_gems.gem1, self._swap_gems.gem2]):
                 self._match_gems.add_to_matching(self._swap_gems.gem1)
                 self._match_gems.add_to_matching(self._swap_gems.gem2)
                 if self._match_gems.match():
@@ -271,7 +296,7 @@ class Board_Manager():
                 self._swap_gems.clear_swap()
                 self._select_gem.clear()
 
-        if self._check_moving_of_gems(self._match_gems.set_matching):
+        if self.check_gems_ready():
             if len(self._match_gems.set_matching) > 0:
                 self._match_gems.match()
 

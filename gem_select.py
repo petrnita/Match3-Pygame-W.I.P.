@@ -5,9 +5,10 @@ from sprites import Animation
 
 class Select_Gem():
     def __init__(self):
+        from game_assets import Gem
         self._select_group: GroupSingle = GroupSingle()
-        self._selected_gem1 = None
-        self._selected_gem2 = None
+        self._selected_gem1: Gem = None
+        self._selected_gem2: Gem = None
         self._ready_to_swap: bool =  False
 
     @property

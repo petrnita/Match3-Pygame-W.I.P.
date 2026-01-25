@@ -1,4 +1,5 @@
 from consts import GAME
+from game_assets import Gem
 
 mask = [
     [[0, 1, 0],
@@ -61,7 +62,8 @@ mask = [
 
 class Check_Matching():
     @classmethod
-    def check(cls, board) -> bool:
+    def check(cls, board: list[Gem]) -> bool:
+        import sys
         for x in range(int(GAME.BOARD_SIZE.x)):
             for y in range(int(GAME.BOARD_SIZE.y)):
                 for m in mask:

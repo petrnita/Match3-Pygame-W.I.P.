@@ -57,13 +57,14 @@ class GameManager():
                         sys.exit()
                     if event.key == pygame.K_ESCAPE:
                         run = False
-                if self.game_status != 'game_over':
-                    if event.type == self.check_board and self.board_manager._check_moving_of_gems(self.board_manager.match_gems.set_matching):
-                        if not Check_Matching.check(self.board_manager.board.gems):
-                            self.game_status = 'game_over'
-                            Fade_In(self.fade_group, 2)
-                            Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2-32), TXT.NO_MORE_MOVES)
-                            Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2+32), TXT.PRESS_ANY_KEY, 24)
+                if event.type == self.check_board:        
+                    if self.game_status != 'game_over':
+                        if self.board_manager.check_gems_ready() and not self.board_manager._swap_gems.swaping:
+                            if not Check_Matching.check(self.board_manager.board.gems):
+                                self.game_status = 'game_over'
+                                Fade_In(self.fade_group, 2)
+                                Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2-32), TXT.NO_MORE_MOVES)
+                                Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2+32), TXT.PRESS_ANY_KEY, 24)
 
                     
             self.paint_screen()

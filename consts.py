@@ -71,7 +71,7 @@ BOARD.OFFSET = vec(SCREEN.LEFT, SCREEN.TOP)
 
 GAME = Game_Props()
 GAME.BOARD_SIZE = vec(8, 8)
-GAME.NUMBER_OF_GEMS = 7
+GAME.NUMBER_OF_GEMS = 9
 
 GEMS = Properities()
 GEMS.IMAGE = pygame.image.load('gfx/gems.png')
