@@ -2,12 +2,10 @@ import pygame, sys
 from pygame import Surface, Rect
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
-from pygame.font import SysFont
 from graphic import ImageSheet
 
 pygame.init()
 pygame.mixer.init()
-pygame.font.init()
 
 
 class Properities():
