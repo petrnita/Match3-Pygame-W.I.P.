@@ -7,7 +7,7 @@ from graphic import ImageSheet
 from gem_select import Select_Gem
 from swap_gem import Swap_Gem
 from match import Match
-from graphic import Swap_Dirs
+from sprites import Swap_Dirs
 from resources import BoardPosition
 
 

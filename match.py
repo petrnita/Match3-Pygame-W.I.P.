@@ -1,5 +1,6 @@
 from consts import *
-from graphic import ImageSheet, Animation
+from graphic import ImageSheet
+from sprites import Animation
 
 class Match():
     def __init__(self, board_manager):

@@ -3,7 +3,8 @@ import sys
 from screen_data import ScreenLayout
 from game_assets import Board_Manager
 from check_matching import Check_Matching
-from graphic import Text_Sprite, Fade_In
+from sprites import Fade_In
+from sprites import Text_Sprite
 
 
 class GameManager():

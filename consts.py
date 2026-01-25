@@ -2,6 +2,7 @@ import pygame, sys
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
 from pygame.font import SysFont
+from graphic import ImageSheet
 
 pygame.init()
 pygame.mixer.init()
@@ -25,6 +26,7 @@ BACKGROUND = pygame.image.load('gfx/back.png')
 BOARD_BACK = pygame.image.load('gfx/board.png')
 SCR_LEFT = SCR_RIGHT = (BACKGROUND.get_width() - BOARD_BACK.get_width()) // 2
 SCR_TOP = SCR_BOTTOM = (BACKGROUND.get_height() - BOARD_BACK.get_height()) // 2
+BOARD_OFFSET = vec(SCR_LEFT, SCR_TOP)
 SCR_TILE_SIZE = vec(96, 96)
 
 GAME_BOARD_SIZE = vec(8, 8)
@@ -37,6 +39,10 @@ GEM_SPEED = 480
 
 SELECT_IMAGE = pygame.image.load('gfx/select_anim.png')
 SELECT_SIZE = vec(128, 128)
+SELECT_ANIM = ImageSheet(SELECT_IMAGE, SELECT_SIZE)
+SELECT_OFFSET = vec(-16, -16) + BOARD_OFFSET
+SELECT_SPEED = 32
+SELECT_LOOP = True
 
 KILL_GEM_IMAGE = pygame.image.load('gfx/kill_gem.png')
 KILL_GEM_SIZE = vec(96, 96)
