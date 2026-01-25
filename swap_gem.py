@@ -1,5 +1,5 @@
 from consts import *
-
+from game_assets import Board_Manager
 
 class Swap_Gem():
     def __init__(self, board_manager):
