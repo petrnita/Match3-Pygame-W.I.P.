@@ -46,6 +46,10 @@ SELECT_LOOP = True
 
 KILL_GEM_IMAGE = pygame.image.load('gfx/kill_gem.png')
 KILL_GEM_SIZE = vec(96, 96)
+KILL_GEM_ANIM = ImageSheet(KILL_GEM_IMAGE, KILL_GEM_SIZE)
+KILL_GEM_OFFSET = BOARD_OFFSET
+KILL_GEM_SPEED = 32
+KILL_GEM_LOOP = False
 
 SWAP_DIRS_IMAGE = pygame.image.load('gfx/swap_dirs.png')
 SWAP_DIRS_SIZE = vec(192, 192)

@@ -124,11 +124,13 @@ class Gem(Sprite):
 
 class Create_Board():
     def __init__(self, board_manager,
-                 gems_group: Group):
-        self._gems_sheet = ImageSheet(GEMS_IMAGE, GEM_SIZE)
+                 gems_group: Group,
+                 gems_sheet: ImageSheet,
+                 nr_of_gems: int):
+        self._gems_sheet: ImageSheet = gems_sheet
         self._size: vec = GAME_BOARD_SIZE
         self._board_manager = board_manager
-        self._nr_of_gems = GAME_NUMBER_OF_GEMS
+        self._nr_of_gems: int = nr_of_gems
         self._gems_group: Group = gems_group
         self._gems: list[Gem] = self._make_board()
 
@@ -164,7 +166,10 @@ class Board_Manager():
     def __init__(self, gems_group: Group, screen_layout: ScreenLayout):
         self._gems_group: Group = gems_group
         self._screen_layout: ScreenLayout = screen_layout
-        self._board: Create_Board = Create_Board(self, self._gems_group)
+        self._board: Create_Board = Create_Board(self,
+                                                 self._gems_group,
+                                                 ImageSheet(GEMS_IMAGE, GEM_SIZE),
+                                                 GAME_NUMBER_OF_GEMS)
         self._select_gem: Select_Gem = Select_Gem()
         self._swapdir_group: GroupSingle = GroupSingle()
         self._pointer_group: GroupSingle = GroupSingle()
