@@ -39,7 +39,7 @@ class Animation(Sprite):
         self._anim: ImageSheet = sheet_img
         self._frames: int = self._anim.frames
         self.image: Surface = self._anim.sheet[0]
-        self.rect: Rect = self.image.get_rect(topleft=self._pos+self._offset+vec(SCR_LEFT, SCR_TOP))
+        self.rect: Rect = self.image.get_rect(topleft=self._pos+self._offset)
 
     def update(self, dt: float):
         if self._frame < self._frames - 1:

@@ -53,7 +53,8 @@ class Match():
                     Animation(self._board_manager.anim_group,
                                 same.bpos.gfx_pos,
                                 ImageSheet(KILL_GEM_IMAGE, KILL_GEM_SIZE),
-                                32)
+                                32,
+                                vec(SCR_LEFT, SCR_TOP))
                     same.kill()
                     self._board_manager.board.gems[int(same.bpos.pos.x)][int(same.bpos.pos.y)] = None
                 ret = True

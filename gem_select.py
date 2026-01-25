@@ -61,7 +61,7 @@ class Select_Gem():
                   self._selected_gem1.bpos.gfx_pos,
                   ImageSheet(SELECT_IMAGE, SELECT_SIZE),
                   32,
-                  vec(-16, -16),
+                  vec(-16, -16)+vec(SCR_LEFT, SCR_TOP),
                   True)
 
     def _unselect(self):
