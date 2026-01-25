@@ -46,7 +46,7 @@ TXT.PRESS_ANY_KEY = pygame.image.load('gfx/press_any_key.png')
 
 GAME = Game_Props()
 GAME.BOARD_SIZE = vec(8, 8)
-GAME.NUMBER_OF_GEMS = 9
+GAME.NUMBER_OF_GEMS = 7
 
 GEMS = Properities()
 GEMS.IMAGE = pygame.image.load('gfx/gems.png')
