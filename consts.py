@@ -4,6 +4,7 @@ from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
 from pygame.font import SysFont
 from graphic import ImageSheet
+from enum import Enum
 
 pygame.init()
 pygame.mixer.init()
@@ -20,11 +21,13 @@ class Properities():
         self.LOOP: bool = None
 
 
-TRANSPARENT = (0, 0, 0, 0)
-BLACK_DARK = '#3b3b3b'
-BLACK_LIGHT = '#535353'
-SKIN_MEDIUM = '#e8c4a3'
-COLOR_TEXT_1 = "#E4421A"
+class Colors():
+    def __init__(self):
+        self.TRANSPARENT = (0, 0, 0, 0)
+        self.SKIN_MEDIUM = '#e8c4a3'
+
+        
+COLORS = Colors()
 
 SND_SWAP_BACK = Sound('snd/swap_back.wav')
 
@@ -35,10 +38,14 @@ SCR_WIDTH = 1734
 SCR_HEIGHT = 1044
 
 BACKGROUND = pygame.image.load('gfx/back.png')
-BOARD_BACK = pygame.image.load('gfx/board.png')
-SCR_LEFT = SCR_RIGHT = (BACKGROUND.get_width() - BOARD_BACK.get_width()) // 2
-SCR_TOP = SCR_BOTTOM = (BACKGROUND.get_height() - BOARD_BACK.get_height()) // 2
-BOARD_OFFSET = vec(SCR_LEFT, SCR_TOP)
+
+BOARD = Properities()
+BOARD.IMAGE = pygame.image.load('gfx/board.png')
+BOARD.SIZE = vec(BOARD.IMAGE.get_width(), BOARD.IMAGE.get_height())
+SCR_LEFT = SCR_RIGHT = (BACKGROUND.get_width() - BOARD.SIZE.x) // 2
+SCR_TOP = SCR_BOTTOM = (BACKGROUND.get_height() - BOARD.SIZE.y) // 2
+BOARD.OFFSET = vec(SCR_LEFT, SCR_TOP)
+
 SCR_TILE_SIZE = vec(96, 96)
 
 GAME_BOARD_SIZE = vec(8, 8)
@@ -54,7 +61,7 @@ SELECT = Properities()
 SELECT.IMAGE = pygame.image.load('gfx/select_anim.png')
 SELECT.SIZE = vec(128, 128)
 SELECT.ANIM = ImageSheet(SELECT.IMAGE, SELECT.SIZE)
-SELECT.OFFSET = vec(-16, -16) + BOARD_OFFSET
+SELECT.OFFSET = vec(-16, -16) + BOARD.OFFSET
 SELECT.SPEED = 32
 SELECT.LOOP = True
 
@@ -62,7 +69,7 @@ KILL_GEM = Properities()
 KILL_GEM.IMAGE = pygame.image.load('gfx/kill_gem.png')
 KILL_GEM.SIZE = vec(96, 96)
 KILL_GEM.ANIM = ImageSheet(KILL_GEM.IMAGE, KILL_GEM.SIZE)
-KILL_GEM.OFFSET = BOARD_OFFSET
+KILL_GEM.OFFSET = BOARD.OFFSET
 KILL_GEM.SPEED = 32
 KILL_GEM.LOOP = False
 

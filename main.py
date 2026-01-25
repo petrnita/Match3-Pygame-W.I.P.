@@ -22,8 +22,8 @@ class GameManager():
         
     def paint_screen(self):
         self.screen_layout.screen.blit(BACKGROUND, (0, 0))
-        self.screen_layout.top_screen.fill(TRANSPARENT)
-        self.screen_layout.board_screen.blit(BOARD_BACK, (0, 0))
+        self.screen_layout.top_screen.fill(COLORS.TRANSPARENT)
+        self.screen_layout.board_screen.blit(BOARD.IMAGE, (0, 0))
 
     def update(self, events, dt):
         self.board_manager.update(events, dt, self.game_status)

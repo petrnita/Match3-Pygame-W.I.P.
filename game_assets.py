@@ -68,7 +68,7 @@ class Gem(Sprite):
     def reset_state(self):
         self._frame = 0
         self._state = 'idle'
-        self.image.fill(TRANSPARENT)
+        self.image.fill(COLORS.TRANSPARENT)
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
 
     def _fall(self):

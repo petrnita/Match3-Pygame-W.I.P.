@@ -80,8 +80,8 @@ class Fade_In(Sprite):
         super().__init__(group)
         self._alpha = 0
         self._speed: int = speed
-        self.image: Surface = Surface((BOARD_BACK.get_width(), BOARD_BACK.get_height()), pygame.SRCALPHA)
-        pygame.draw.rect(self.image, SKIN_MEDIUM, self.image.get_rect())
+        self.image: Surface = Surface((BOARD.SIZE.x, BOARD.SIZE.y), pygame.SRCALPHA)
+        pygame.draw.rect(self.image, COLORS.SKIN_MEDIUM, self.image.get_rect())
         self.rect = self.image.get_rect(topleft = (SCR_LEFT, SCR_TOP))
         self.image.set_alpha(self._alpha)
 
