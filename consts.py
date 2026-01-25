@@ -1,4 +1,5 @@
 import pygame, sys
+from pygame import Surface, Rect
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
 from pygame.font import SysFont
@@ -7,6 +8,17 @@ from graphic import ImageSheet
 pygame.init()
 pygame.mixer.init()
 pygame.font.init()
+
+
+class Properities():
+    def __init__(self):
+        self.IMAGE: Surface = None
+        self.SIZE: vec = None
+        self.ANIM: ImageSheet = None
+        self.OFFSET: vec = None
+        self.SPEED: int = None
+        self.LOOP: bool = None
+
 
 TRANSPARENT = (0, 0, 0, 0)
 BLACK_DARK = '#3b3b3b'
@@ -32,25 +44,29 @@ SCR_TILE_SIZE = vec(96, 96)
 GAME_BOARD_SIZE = vec(8, 8)
 GAME_NUMBER_OF_GEMS = 7
 
-GEMS_IMAGE = pygame.image.load('gfx/gems.png')
-GEM_SIZE = vec(96, 96)
-GEM_OFFSET = vec(12, 12)
-GEM_SPEED = 480
+GEMS = Properities()
+GEMS.IMAGE = pygame.image.load('gfx/gems.png')
+GEMS.SIZE = vec(96, 96)
+GEMS.OFFSET = vec(12, 12)
+GEMS.SPEED = 480
 
-SELECT_IMAGE = pygame.image.load('gfx/select_anim.png')
-SELECT_SIZE = vec(128, 128)
-SELECT_ANIM = ImageSheet(SELECT_IMAGE, SELECT_SIZE)
-SELECT_OFFSET = vec(-16, -16) + BOARD_OFFSET
-SELECT_SPEED = 32
-SELECT_LOOP = True
+SELECT = Properities()
+SELECT.IMAGE = pygame.image.load('gfx/select_anim.png')
+SELECT.SIZE = vec(128, 128)
+SELECT.ANIM = ImageSheet(SELECT.IMAGE, SELECT.SIZE)
+SELECT.OFFSET = vec(-16, -16) + BOARD_OFFSET
+SELECT.SPEED = 32
+SELECT.LOOP = True
 
-KILL_GEM_IMAGE = pygame.image.load('gfx/kill_gem.png')
-KILL_GEM_SIZE = vec(96, 96)
-KILL_GEM_ANIM = ImageSheet(KILL_GEM_IMAGE, KILL_GEM_SIZE)
-KILL_GEM_OFFSET = BOARD_OFFSET
-KILL_GEM_SPEED = 32
-KILL_GEM_LOOP = False
+KILL_GEM = Properities()
+KILL_GEM.IMAGE = pygame.image.load('gfx/kill_gem.png')
+KILL_GEM.SIZE = vec(96, 96)
+KILL_GEM.ANIM = ImageSheet(KILL_GEM.IMAGE, KILL_GEM.SIZE)
+KILL_GEM.OFFSET = BOARD_OFFSET
+KILL_GEM.SPEED = 32
+KILL_GEM.LOOP = False
 
-SWAP_DIRS_IMAGE = pygame.image.load('gfx/swap_dirs.png')
-SWAP_DIRS_SIZE = vec(192, 192)
-SWAP_DIRS_OFFSET = vec(-48, -48)
+SWAP_DIRS = Properities()
+SWAP_DIRS.IMAGE = pygame.image.load('gfx/swap_dirs.png')
+SWAP_DIRS.SIZE = vec(192, 192)
+SWAP_DIRS.OFFSET = vec(-48, -48)

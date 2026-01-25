@@ -1,5 +1,4 @@
 from consts import *
-from pygame import Surface
 
 
 class ImageSheet():

@@ -1,5 +1,4 @@
 from consts import *
-from pygame import Surface, Rect
 from pygame.sprite import Sprite, Group, GroupSingle
 from random import choice
 from screen_data import ScreenLayout
@@ -21,11 +20,11 @@ class Gem(Sprite):
         self._gems_img: ImageSheet = gems_img
         self._board_manager = board_manager
         self._size: vec = SCR_TILE_SIZE
-        self._offset: vec = GEM_OFFSET
+        self._offset: vec = GEMS.OFFSET
         self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
         self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
         self._number: int = number
-        self._speed: int = GEM_SPEED
+        self._speed: int = GEMS.SPEED
         self._direction: vec = vec()
         self._velocity: vec = self._direction * self._speed
         self._end_moving: bool = True
@@ -33,7 +32,7 @@ class Gem(Sprite):
         self._is_falling: bool = False
         self._state: str = 'idle'
         self._frame: int = 0
-        self.image: Surface = Surface((GEM_SIZE.x, GEM_SIZE.y), pygame.SRCALPHA)
+        self.image: Surface = Surface((GEMS.SIZE.x, GEMS.SIZE.y), pygame.SRCALPHA)
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
         self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
 
@@ -168,7 +167,7 @@ class Board_Manager():
         self._screen_layout: ScreenLayout = screen_layout
         self._board: Create_Board = Create_Board(self,
                                                  self._gems_group,
-                                                 ImageSheet(GEMS_IMAGE, GEM_SIZE),
+                                                 ImageSheet(GEMS.IMAGE, GEMS.SIZE),
                                                  GAME_NUMBER_OF_GEMS)
         self._select_gem: Select_Gem = Select_Gem()
         self._swapdir_group: GroupSingle = GroupSingle()

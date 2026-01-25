@@ -1,5 +1,4 @@
 from consts import *
-from pygame import Rect, Surface
 from pygame.sprite import Group, GroupSingle, Sprite
 from resources import BoardPosition
 
@@ -33,16 +32,16 @@ class Animation(Sprite):
 
 
 class Swap_Dirs(Sprite):
-    img = SWAP_DIRS_IMAGE
+    img = SWAP_DIRS.IMAGE
     def __init__(self, group: GroupSingle,
                  pos: BoardPosition,
                  direction: vec):
         super().__init__(group)
         self._gfx: vec = SCR_TILE_SIZE
-        self._offset: vec = SWAP_DIRS_OFFSET
+        self._offset: vec = SWAP_DIRS.OFFSET
         self._pos: BoardPosition = pos
         self._direction: vec = direction
-        self.images = ImageSheet(self.img, SWAP_DIRS_SIZE)
+        self.images = ImageSheet(self.img, SWAP_DIRS.SIZE)
         self._dirs: dict[Surface] = {
             '[0, -1]': self.images.sheet[0],
             '[1, 0]': self.images.sheet[1],

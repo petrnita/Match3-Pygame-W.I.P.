@@ -58,7 +58,7 @@ class Select_Gem():
     
     def _select(self):
         Animation(self._select_group, self._selected_gem1.bpos.gfx_pos,
-                  SELECT_ANIM, SELECT_SPEED, SELECT_OFFSET, SELECT_LOOP)
+                  SELECT.ANIM, SELECT.SPEED, SELECT.OFFSET, SELECT.LOOP)
 
     def _unselect(self):
         self._select_group.empty()

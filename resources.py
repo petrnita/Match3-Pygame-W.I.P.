@@ -1,6 +1,4 @@
 from consts import *
-from pygame import Surface
-from pygame.sprite import Sprite, GroupSingle
 
 
 class BoardPosition():
