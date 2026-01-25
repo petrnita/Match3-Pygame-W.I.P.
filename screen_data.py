@@ -1,9 +1,11 @@
-from consts import *
+import pygame
+from pygame import Surface
+from consts import SCREEN, BOARD
 
 
 class ScreenLayout():
     def __init__(self):
-        self._screen = pygame.display.set_mode((SCR_WIDTH, SCR_HEIGHT))
+        self._screen = pygame.display.set_mode((SCREEN.WIDTH, SCREEN.HEIGHT))
         pygame.display.set_caption('Match-3 game tutorial 2026 > Petr Nita <')
         self._board_screen: Surface = Surface((BOARD.SIZE.x, BOARD.SIZE.y), pygame.SRCALPHA)
         self._top_screen: Surface = self._screen.copy().convert_alpha()

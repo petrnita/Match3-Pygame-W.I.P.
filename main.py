@@ -1,5 +1,6 @@
-from consts import *
-import sys
+from consts import TXT, BACKGROUND, COLORS, BOARD, SCREEN
+import pygame, sys
+from pygame.math import Vector2 as vec
 from screen_data import ScreenLayout
 from game_assets import Board_Manager
 from check_matching import Check_Matching
@@ -33,7 +34,7 @@ class GameManager():
     def draw(self):
         self.gems_group.draw(self.screen_layout.board_screen)
         self.board_manager.anim_group.draw(self.screen_layout.screen)
-        self.screen_layout.screen.blit(self.screen_layout.board_screen, (SCR_LEFT, SCR_TOP))
+        self.screen_layout.screen.blit(self.screen_layout.board_screen, BOARD.OFFSET)
         self.fade_group.draw(self.screen_layout.top_screen)
         self.text_group.draw(self.screen_layout.top_screen)
         self.screen_layout.screen.blit(self.screen_layout.top_screen, (0, 0))
@@ -61,8 +62,8 @@ class GameManager():
                         if not Check_Matching.check(self.board_manager.board.gems):
                             self.game_status = 'game_over'
                             Fade_In(self.fade_group, 2)
-                            Text_Sprite(self.text_group, vec(SCR_WIDTH//2, SCR_HEIGHT//2-32), TXT_NO_MORE_MOVES)
-                            Text_Sprite(self.text_group, vec(SCR_WIDTH//2, SCR_HEIGHT//2+32), TXT_PRESS_ANY_KEY, 24)
+                            Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2-32), TXT.NO_MORE_MOVES)
+                            Text_Sprite(self.text_group, vec(SCREEN.WIDTH//2, SCREEN.HEIGHT//2+32), TXT.PRESS_ANY_KEY, 24)
 
                     
             self.paint_screen()

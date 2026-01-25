@@ -1,5 +1,8 @@
-from consts import *
+from consts import COLORS, SND_SWAP_BACK, GEMS, BOARD, SCREEN, GAME, SWAP_DIRS
+import pygame
+from pygame import Rect, Surface
 from pygame.sprite import Sprite, Group, GroupSingle
+from pygame.math import Vector2 as vec
 from random import choice
 from screen_data import ScreenLayout
 from graphic import ImageSheet
@@ -19,7 +22,7 @@ class Gem(Sprite):
         super().__init__(group)
         self._gems_img: ImageSheet = gems_img
         self._board_manager = board_manager
-        self._size: vec = SCR_TILE_SIZE
+        self._size: vec = SCREEN.TILE_SIZE
         self._offset: vec = GEMS.OFFSET
         self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
         self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
@@ -73,13 +76,13 @@ class Gem(Sprite):
 
     def _fall(self):
         if self._is_falling: return
-        if self._bpos.pos.y == GAME_BOARD_SIZE.y-1: return
+        if self._bpos.pos.y == GAME.BOARD_SIZE.y-1: return
 
         dist = 0
         if self._bpos.pos.y >= 0: start = int(self._bpos.pos.y) + 1
         else: start = 0
 
-        for y in range(start, int(GAME_BOARD_SIZE.y)):
+        for y in range(start, int(GAME.BOARD_SIZE.y)):
             if self._board_manager.board.gems[int(self._bpos.pos.x)][y] == None:
                 dist += 1
         if dist == 0: return
@@ -127,7 +130,7 @@ class Create_Board():
                  gems_sheet: ImageSheet,
                  nr_of_gems: int):
         self._gems_sheet: ImageSheet = gems_sheet
-        self._size: vec = GAME_BOARD_SIZE
+        self._size: vec = GAME.BOARD_SIZE
         self._board_manager = board_manager
         self._nr_of_gems: int = nr_of_gems
         self._gems_group: Group = gems_group
@@ -157,7 +160,7 @@ class Create_Board():
         return gems
     
     def add_new_gem(self, pos: vec):
-        candidates = [nr+1 for nr in range(GAME_NUMBER_OF_GEMS)]
+        candidates = [nr+1 for nr in range(GAME.NUMBER_OF_GEMS)]
         return Gem(self._gems_group, self._gems_sheet, self._board_manager, pos, choice(candidates))
     
 
@@ -168,7 +171,7 @@ class Board_Manager():
         self._board: Create_Board = Create_Board(self,
                                                  self._gems_group,
                                                  ImageSheet(GEMS.IMAGE, GEMS.SIZE),
-                                                 GAME_NUMBER_OF_GEMS)
+                                                 GAME.NUMBER_OF_GEMS)
         self._select_gem: Select_Gem = Select_Gem()
         self._swapdir_group: GroupSingle = GroupSingle()
         self._pointer_group: GroupSingle = GroupSingle()
@@ -207,7 +210,7 @@ class Board_Manager():
 
         gem = None
         for _gem in self._gems_group:
-            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - vec(SCR_LEFT, SCR_TOP))):
+            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - BOARD.OFFSET)):
                 gem = _gem
 
         for event in events:
@@ -229,8 +232,10 @@ class Board_Manager():
                         self._overs.clear()
                         self._overs.append(gem)
                     if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
-                        Swap_Dirs(self._swapdir_group, self._select_gem.selected_gem1.bpos,
-                                vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
+                        Swap_Dirs(self._swapdir_group,
+                                    self._select_gem.selected_gem1.bpos,
+                                    SWAP_DIRS.OFFSET+BOARD.OFFSET,
+                                    vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
                     else:
                         self._swapdir_group.empty()
 

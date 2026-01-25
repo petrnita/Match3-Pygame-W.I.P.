@@ -1,11 +1,13 @@
-from consts import *
-from game_assets import Board_Manager
+from consts import SND_SWAP_BACK
+
 
 class Swap_Gem():
     def __init__(self, board_manager):
-        self._gem1 = None
-        self._gem2 = None
-        self._board_manager = board_manager
+        from game_assets import Board_Manager, Gem
+
+        self._gem1: Gem = None
+        self._gem2: Gem = None
+        self._board_manager: Board_Manager = board_manager
         self._swaping: bool = False
 
     @property

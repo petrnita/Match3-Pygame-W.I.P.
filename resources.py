@@ -1,4 +1,4 @@
-from consts import *
+from pygame.math import Vector2 as vec
 
 
 class BoardPosition():

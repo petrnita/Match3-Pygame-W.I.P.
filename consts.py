@@ -24,29 +24,54 @@ class Colors():
         self.SKIN_MEDIUM = '#e8c4a3'
 
 
+class Screen_Props():
+    def __init__(self):
+        self.WIDTH = None
+        self.HEIGHT = None
+        self.TILE_SIZE = None
+        self.LEFT = None
+        self.RIGHT = None
+        self.TOP = None
+        self.BOTTOM = None
+
+
+class Game_Props():
+    def __init__(self):
+        self.BOARD_SIZE = None
+        self.NUMBER_OF_GEMS = None
+
+
+class Txt_Props():
+    def __init__(self):
+        self.NO_MORE_MOVES = None
+        self.PRESS_ANY_KEY = None
+
+
 COLORS = Colors()
 
 SND_SWAP_BACK = Sound('snd/swap_back.wav')
 
-TXT_NO_MORE_MOVES = pygame.image.load('gfx/no_more_moves.png')
-TXT_PRESS_ANY_KEY = pygame.image.load('gfx/press_any_key.png')
+TXT = Txt_Props()
+TXT.NO_MORE_MOVES = pygame.image.load('gfx/no_more_moves.png')
+TXT.PRESS_ANY_KEY = pygame.image.load('gfx/press_any_key.png')
 
-SCR_WIDTH = 1734
-SCR_HEIGHT = 1044
+SCREEN = Screen_Props()
+SCREEN.WIDTH = 1734
+SCREEN.HEIGHT = 1044
+SCREEN.TILE_SIZE = vec(96, 96)
 
 BACKGROUND = pygame.image.load('gfx/back.png')
 
 BOARD = Properities()
 BOARD.IMAGE = pygame.image.load('gfx/board.png')
 BOARD.SIZE = vec(BOARD.IMAGE.get_width(), BOARD.IMAGE.get_height())
-SCR_LEFT = SCR_RIGHT = (BACKGROUND.get_width() - BOARD.SIZE.x) // 2
-SCR_TOP = SCR_BOTTOM = (BACKGROUND.get_height() - BOARD.SIZE.y) // 2
-BOARD.OFFSET = vec(SCR_LEFT, SCR_TOP)
+SCREEN.LEFT = SCREEN.RIGHT = (BACKGROUND.get_width() - BOARD.SIZE.x) // 2
+SCREEN.TOP = SCREEN.BOTTOM = (BACKGROUND.get_height() - BOARD.SIZE.y) // 2
+BOARD.OFFSET = vec(SCREEN.LEFT, SCREEN.TOP)
 
-SCR_TILE_SIZE = vec(96, 96)
-
-GAME_BOARD_SIZE = vec(8, 8)
-GAME_NUMBER_OF_GEMS = 7
+GAME = Game_Props()
+GAME.BOARD_SIZE = vec(8, 8)
+GAME.NUMBER_OF_GEMS = 7
 
 GEMS = Properities()
 GEMS.IMAGE = pygame.image.load('gfx/gems.png')

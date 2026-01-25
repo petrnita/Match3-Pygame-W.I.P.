@@ -1,5 +1,6 @@
 from pygame.sprite import GroupSingle
-from consts import *
+from pygame.math import Vector2 as vec
+from consts import SELECT
 from sprites import Animation
 
 class Select_Gem():

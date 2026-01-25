@@ -1,9 +1,12 @@
-from consts import *
+from pygame.math import Vector2 as vec
+from consts import GAME, KILL_GEM
 from sprites import Animation
 
 class Match():
     def __init__(self, board_manager):
-        self._board_manager = board_manager
+        from game_assets import Board_Manager
+
+        self._board_manager: Board_Manager = board_manager
         self._set_matching: set = set()
         self._threes = 0
         self._horizontal: list[vec] = [vec(-1, 0), vec(), vec(1, 0)]
@@ -14,33 +17,40 @@ class Match():
         return self._set_matching
 
     def add_to_matching(self, gem):
-        self._set_matching.add(gem)
+        from game_assets import Gem
+        _gem: Gem = gem
+        self._set_matching.add(_gem)
         
     def _get_neighbor(self, gem, offset: vec):
-        bound = vec(GAME_BOARD_SIZE.x, GAME_BOARD_SIZE.y)
-        if 0 <= gem.bpos.pos.x + offset.x < bound.x and 0 <= gem.bpos.pos.y + offset.y < bound.y:
-            return self._board_manager.board.gems[int(gem.bpos.pos.x + offset.x)][int(gem.bpos.pos.y + offset.y)]
+        from game_assets import Gem
+        _gem: Gem = gem
+        bound = GAME.BOARD_SIZE
+        if 0 <= _gem.bpos.pos.x + offset.x < bound.x and 0 <= _gem.bpos.pos.y + offset.y < bound.y:
+            return self._board_manager.board.gems[int(_gem.bpos.pos.x + offset.x)][int(_gem.bpos.pos.y + offset.y)]
         return None
     
     def _three_of_kind(self, gem, axis: list) -> tuple:
+        from game_assets import Gem
+        _gem: Gem = gem
         kinds: list = list()
         for neighbor in axis:
-            negative = self._get_neighbor(gem, neighbor + axis[0])
-            center = self._get_neighbor(gem, neighbor)
-            positive = self._get_neighbor(gem, neighbor + axis[2])
+            negative: Gem = self._get_neighbor(_gem, neighbor + axis[0])
+            center: Gem = self._get_neighbor(_gem, neighbor)
+            positive: Gem = self._get_neighbor(_gem, neighbor + axis[2])
             if not None in [negative, center, positive]:
                 if negative.number == center.number == positive.number:
                     kinds.extend([negative, center, positive])
         return kinds
     
     def match(self) -> bool:
+        from game_assets import Gem
         ret = False
         set_match = reversed(sorted(self._set_matching, key=lambda gem: gem.bpos.pos.y))
         self._set_matching = set()
         new_gems = {'0': -1, '1': -1, '2': -1, '3': -1, '4': -1, '5': -1, '6': -1, '7': -1}
         for gem in set_match:
             self._board_manager.possibles = False
-            set_same = set()
+            set_same: set[Gem] = set()
             set_same.update(self._three_of_kind(gem, self._horizontal))
             set_same.update(self._three_of_kind(gem, self._vertical))
             if len(set_same) > 2:
