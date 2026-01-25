@@ -60,7 +60,7 @@ class GameManager():
                         if self.board_manager.check_gems_ready() and not self.board_manager._swap_gems.swaping:
                             if not Check_Matching.check(self.board_manager.board.gems):
                                 self.game_status = 'game_over'
-                                Fade_In(self.fade_group, 2)
+                                Fade_In(self.fade_group, self.screen_manager, 2)
                                 Text_Sprite(self.text_group,
                                             vec(self.screen_manager.screens.Main.get_width()//2,
                                                 self.screen_manager.screens.Main.get_height()//2-32),
