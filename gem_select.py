@@ -2,11 +2,13 @@ from pygame.sprite import GroupSingle
 from pygame.math import Vector2 as vec
 from consts import SELECT
 from sprites import Animation
+from screen_manager import Screen_Manager
 
 class Select_Gem():
-    def __init__(self):
+    def __init__(self, screen_manager: Screen_Manager):
         from game_assets import Gem
         self._select_group: GroupSingle = GroupSingle()
+        self._screen_manager: Screen_Manager = screen_manager
         self._selected_gem1: Gem = None
         self._selected_gem2: Gem = None
         self._ready_to_swap: bool =  False
@@ -60,7 +62,7 @@ class Select_Gem():
     
     def _select(self):
         Animation(self._select_group, self._selected_gem1.bpos.gfx_pos,
-                  SELECT.ANIM, SELECT.SPEED, SELECT.OFFSET, SELECT.LOOP)
+                  SELECT.ANIM, SELECT.SPEED, SELECT.OFFSET+self._screen_manager.board_offset, SELECT.LOOP)
 
     def _unselect(self):
         self._select_group.empty()

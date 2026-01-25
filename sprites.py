@@ -2,9 +2,10 @@ import pygame
 from pygame import Rect, Surface
 from pygame.sprite import Group, GroupSingle, Sprite
 from pygame.math import Vector2 as vec
-from consts import SCREEN, SWAP_DIRS, BOARD, COLORS
+from consts import SWAP_DIRS, COLORS
 from graphic import ImageSheet
 from resources import BoardPosition
+from screen_manager import Screen_Manager
 
 
 class Animation(Sprite):
@@ -38,11 +39,13 @@ class Animation(Sprite):
 class Swap_Dirs(Sprite):
     img = SWAP_DIRS.IMAGE
     def __init__(self, group: GroupSingle,
+                 screen_manager: Screen_Manager,
                  pos: BoardPosition,
                  offset: vec,
                  direction: vec):
         super().__init__(group)
-        self._gfx: vec = SCREEN.TILE_SIZE
+        self._screen_manager: Screen_Manager = screen_manager
+        self._gfx: vec = self._screen_manager.properities.tile_size
         self._offset: vec = offset
         self._pos: BoardPosition = pos
         self._direction: vec = direction
@@ -81,13 +84,14 @@ class Text_Sprite(Sprite):
 
 
 class Fade_In(Sprite):
-    def __init__(self, group: Group, speed: int):
+    def __init__(self, group: Group, screen_manager: Screen_Manager, speed: int):
         super().__init__(group)
         self._alpha = 0
         self._speed: int = speed
-        self.image: Surface = Surface((BOARD.SIZE.x, BOARD.SIZE.y), pygame.SRCALPHA)
+        self._screen_manager: Screen_Manager = screen_manager
+        self.image: Surface = Surface((self._screen_manager.board_size.x, self._screen_manager.board_size.y), pygame.SRCALPHA)
         pygame.draw.rect(self.image, COLORS.SKIN_MEDIUM, self.image.get_rect())
-        self.rect = self.image.get_rect(topleft = BOARD.OFFSET)
+        self.rect = self.image.get_rect(topleft = self._screen_manager.board_offset)
         self.image.set_alpha(self._alpha)
 
     def update(self, dt):

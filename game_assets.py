@@ -1,10 +1,10 @@
-from consts import COLORS, SND_SWAP_BACK, GEMS, BOARD, SCREEN, GAME, SWAP_DIRS
+from consts import COLORS, SND_SWAP_BACK, GEMS, GAME, SWAP_DIRS
 import pygame
 from pygame import Rect, Surface
 from pygame.sprite import Sprite, Group, GroupSingle
 from pygame.math import Vector2 as vec
 from random import choice
-from screen_data import ScreenLayout
+from screen_manager import Screen_Manager
 from graphic import ImageSheet
 from gem_select import Select_Gem
 from swap_gem import Swap_Gem
@@ -22,7 +22,7 @@ class Gem(Sprite):
         super().__init__(group)
         self._gems_img: ImageSheet = gems_img
         self._board_manager = board_manager
-        self._size: vec = SCREEN.TILE_SIZE
+        self._size: vec = self._board_manager.screen_manager.properities.tile_size
         self._offset: vec = GEMS.OFFSET
         self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
         self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
@@ -171,14 +171,14 @@ class Create_Board():
     
 
 class Board_Manager():
-    def __init__(self, gems_group: Group, screen_layout: ScreenLayout):
+    def __init__(self, gems_group: Group, screen_manager: Screen_Manager):
         self._gems_group: Group = gems_group
-        self._screen_layout: ScreenLayout = screen_layout
+        self._screen_manager: Screen_Manager = screen_manager
         self._board: Create_Board = Create_Board(self,
                                                  self._gems_group,
                                                  ImageSheet(GEMS.IMAGE, GEMS.SIZE),
                                                  GAME.NUMBER_OF_GEMS)
-        self._select_gem: Select_Gem = Select_Gem()
+        self._select_gem: Select_Gem = Select_Gem(self._screen_manager)
         self._swapdir_group: GroupSingle = GroupSingle()
         self._pointer_group: GroupSingle = GroupSingle()
         self._anim_group: Group = Group()
@@ -187,6 +187,10 @@ class Board_Manager():
         self._overs: list[Gem] = list()
         self._possibles: bool = False
         self._gems_ready = False
+
+    @property
+    def screen_manager(self):
+        return self._screen_manager
 
     @property
     def board(self) -> Create_Board:
@@ -218,7 +222,7 @@ class Board_Manager():
 
         gem: Gem = None
         for _gem in self._gems_group:
-            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - BOARD.OFFSET)):
+            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - self._screen_manager.board_offset)):
                 gem = _gem
 
         for event in events:
@@ -241,8 +245,9 @@ class Board_Manager():
                         self._overs.append(gem)
                     if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
                         Swap_Dirs(self._swapdir_group,
+                                    self._screen_manager,
                                     self._select_gem.selected_gem1.bpos,
-                                    SWAP_DIRS.OFFSET+BOARD.OFFSET,
+                                    SWAP_DIRS.OFFSET+self._screen_manager.board_offset,
                                     vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
                     else:
                         self._swapdir_group.empty()
@@ -268,9 +273,9 @@ class Board_Manager():
 
         self._select_gem.select_group.update(dt)
         self._anim_group.update(dt)
-        self._select_gem.select_group.draw(self._screen_layout.top_screen)
-        self._swapdir_group.draw(self._screen_layout._top_screen)
-        self._anim_group.draw(self._screen_layout._top_screen)
+        self._select_gem.select_group.draw(self._screen_manager.screens.Top)
+        self._swapdir_group.draw(self._screen_manager.screens.Top)
+        self._anim_group.draw(self._screen_manager.screens.Anim)
 
         if self._select_gem.ready_to_swap:
             self._select_gem.ready_to_swap = False
@@ -293,4 +298,5 @@ class Board_Manager():
                 self._match_gems.match()
 
         self._gems_group.update(dt)
+        
 
