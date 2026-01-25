@@ -4,7 +4,6 @@ from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
 from pygame.font import SysFont
 from graphic import ImageSheet
-from enum import Enum
 
 pygame.init()
 pygame.mixer.init()
@@ -26,7 +25,7 @@ class Colors():
         self.TRANSPARENT = (0, 0, 0, 0)
         self.SKIN_MEDIUM = '#e8c4a3'
 
-        
+
 COLORS = Colors()
 
 SND_SWAP_BACK = Sound('snd/swap_back.wav')
