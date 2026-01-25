@@ -19,12 +19,12 @@ class GameManager():
         self.board_manager = Board_Manager(self.gems_group, self.screen_layout)
         self.check_board = pygame.USEREVENT + 1
         pygame.time.set_timer(self.check_board, 3000)
-        self.game_status = 'play'
+        self.game_status = 'start'
         
     def paint_screen(self):
         self.screen_layout.screen.blit(BACKGROUND, (0, 0))
         self.screen_layout.top_screen.fill(COLORS.TRANSPARENT)
-        self.screen_layout.board_screen.blit(BOARD.IMAGE, (0, 0))
+        self.screen_layout.gems_screen.fill(COLORS.TRANSPARENT)
 
     def update(self, events, dt):
         self.board_manager.update(events, dt, self.game_status)
@@ -32,9 +32,10 @@ class GameManager():
         self.text_group.update(dt)
 
     def draw(self):
-        self.gems_group.draw(self.screen_layout.board_screen)
+        self.gems_group.draw(self.screen_layout.gems_screen)
         self.board_manager.anim_group.draw(self.screen_layout.screen)
         self.screen_layout.screen.blit(self.screen_layout.board_screen, BOARD.OFFSET)
+        self.screen_layout.screen.blit(self.screen_layout.gems_screen, BOARD.OFFSET)
         self.fade_group.draw(self.screen_layout.top_screen)
         self.text_group.draw(self.screen_layout.top_screen)
         self.screen_layout.screen.blit(self.screen_layout.top_screen, (0, 0))
@@ -46,6 +47,7 @@ class GameManager():
         while run:
 
             dt = self.clock.tick(60) / 1000
+            
 
             events = [event for event in pygame.event.get()]
             for event in events:
