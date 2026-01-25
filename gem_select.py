@@ -1,6 +1,6 @@
 from pygame.sprite import GroupSingle
 from consts import *
-from graphic import Select
+from graphic import ImageSheet, Animation
 
 class Select_Gem():
     def __init__(self):
@@ -57,7 +57,12 @@ class Select_Gem():
         return False
     
     def _select(self):
-        Select(self._select_group, self._selected_gem1.bpos.gfx_pos, 32, vec(-16, -16), True)
+        Animation(self._select_group,
+                  self._selected_gem1.bpos.gfx_pos,
+                  ImageSheet(SELECT_IMAGE, SELECT_SIZE),
+                  32,
+                  vec(-16, -16),
+                  True)
 
     def _unselect(self):
         self._select_group.empty()

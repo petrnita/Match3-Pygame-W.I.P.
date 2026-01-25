@@ -1,5 +1,5 @@
 from consts import *
-from graphic import Kill_Gem
+from graphic import ImageSheet, Animation
 
 class Match():
     def __init__(self, board_manager):
@@ -50,7 +50,10 @@ class Match():
                     new_gem = self._board_manager.board.add_new_gem(vec(same.bpos.pos.x, new_y))
                     lst_new_gems.append(new_gem)
                     new_gems[str(int(same.bpos.pos.x))] -= 1
-                    Kill_Gem(self._board_manager.anim_group, same.bpos.gfx_pos, 32)
+                    Animation(self._board_manager.anim_group,
+                                same.bpos.gfx_pos,
+                                ImageSheet(KILL_GEM_IMAGE, KILL_GEM_SIZE),
+                                32)
                     same.kill()
                     self._board_manager.board.gems[int(same.bpos.pos.x)][int(same.bpos.pos.y)] = None
                 ret = True

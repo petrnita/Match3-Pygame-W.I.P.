@@ -26,6 +26,7 @@ class ImageSheet():
 class Animation(Sprite):
     def __init__(self, group: Group | GroupSingle,
                  pos: vec,
+                 sheet_img: ImageSheet,
                  speed: int,
                  offset: vec=vec(),
                  loop: bool=False):
@@ -35,6 +36,10 @@ class Animation(Sprite):
         self._speed: int = speed
         self._loop: bool = loop
         self._frame: int = 0
+        self._anim: ImageSheet = sheet_img
+        self._frames: int = self._anim.frames
+        self.image: Surface = self._anim.sheet[0]
+        self.rect: Rect = self.image.get_rect(topleft=self._pos+self._offset+vec(SCR_LEFT, SCR_TOP))
 
     def update(self, dt: float):
         if self._frame < self._frames - 1:
@@ -43,35 +48,7 @@ class Animation(Sprite):
             self._frame = 0
             if not self._loop: self.kill()
 
-        self.image = self._anim[int(self._frame)].convert_alpha()
-
-
-class Select(Animation):
-    _sheet: ImageSheet = ImageSheet(SELECT_IMAGE, SELECT_SIZE)
-    def __init__(self, group: GroupSingle,
-                 pos: vec,
-                 speed: int,
-                 offset: vec=vec(),
-                 loop: bool=False):
-        super().__init__(group, pos, speed, offset, loop)
-        self._anim: list[Surface] = self._sheet.sheet
-        self._frames: int = self._sheet.frames
-        self.image: Surface = self._anim[0]
-        self.rect: Rect = self.image.get_rect(topleft=self._pos+self._offset+vec(SCR_LEFT, 0)+vec(0, SCR_TOP))
-
-
-class Kill_Gem(Animation):
-    _sheet: ImageSheet = ImageSheet(KILL_GEM_IMAGE, KILL_GEM_SIZE)
-    def __init__(self, group: Group,
-                 pos: BoardPosition,
-                 speed: int,
-                 offset: vec=vec(),
-                 loop: bool=False):
-        super().__init__(group, pos, speed, offset, loop)
-        self._anim: list[Surface] = self._sheet.sheet
-        self._frames: int = self._sheet.frames
-        self.image: Surface = self._anim[0]
-        self.rect: Rect = self.image.get_rect(topleft=self._pos+self._offset+vec(SCR_LEFT, 0)+vec(0, SCR_TOP))
+        self.image = self._anim.sheet[int(self._frame)].convert_alpha()
 
 
 class Swap_Dirs(Sprite):
@@ -92,7 +69,7 @@ class Swap_Dirs(Sprite):
             '[-1, 0]': self.images.sheet[3]
         }
         self.image: Surface = self._dirs[str(self._direction)]
-        self.rect: Rect = self.image.get_rect(topleft=self._pos.gfx_pos+self._offset+vec(SCR_LEFT, 0)+vec(0, SCR_TOP))
+        self.rect: Rect = self.image.get_rect(topleft=self._pos.gfx_pos+self._offset+vec(SCR_LEFT, SCR_TOP))
 
 
 class Text_Sprite(Sprite):
