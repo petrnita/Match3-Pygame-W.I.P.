@@ -34,16 +34,3 @@ class BoardPosition():
     @property
     def offset(self) -> vec:
         return self._offset
-    
-
-class Mouse_Pointer(Sprite):
-    def __init__(self, group: GroupSingle):
-        super().__init__(group)
-        self._gem = None
-        self._pos = pygame.mouse.get_pos() - vec(SCR_LEFT, SCR_TOP)
-        self.image = Surface((1, 1))
-        self.rect = self.image.get_rect(topleft = self._pos)
-
-    def update(self):
-        self._pos = pygame.mouse.get_pos() - vec(SCR_LEFT, SCR_TOP)
-        self.rect.topleft = self._pos

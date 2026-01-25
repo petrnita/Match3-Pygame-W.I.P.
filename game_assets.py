@@ -4,7 +4,6 @@ from pygame.sprite import Sprite, Group, GroupSingle
 from random import choice
 from screen_data import ScreenLayout
 from graphic import ImageSheet
-from resources import Mouse_Pointer
 from gem_select import Select_Gem
 from swap_gem import Swap_Gem
 from match import Match
@@ -171,7 +170,6 @@ class Board_Manager():
         self._swapdir_group: GroupSingle = GroupSingle()
         self._pointer_group: GroupSingle = GroupSingle()
         self._anim_group: Group = Group()
-        self._mouse_pointer: Mouse_Pointer = Mouse_Pointer(self._pointer_group)
         self._swap_gems: Swap_Gem = Swap_Gem(self)
         self._match_gems: Match = Match(self)
         self._overs: list[Gem] = list()
@@ -203,8 +201,12 @@ class Board_Manager():
 
     def _detect_pointer_with_gem_collision(self, events, game_status):
         if not self._check_moving_of_gems(self._match_gems.set_matching): return
-        self._mouse_pointer.update()
-        gem: Gem = pygame.sprite.spritecollideany(self._mouse_pointer, self._gems_group)        
+
+        gem = None
+        for _gem in self._gems_group:
+            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - vec(SCR_LEFT, SCR_TOP))):
+                gem = _gem
+
         for event in events:
             if game_status == 'game_over':
                 break
