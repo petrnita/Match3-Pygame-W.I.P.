@@ -157,8 +157,7 @@ class Create_Board():
     
     def add_new_gem(self, pos: vec):
         candidates = [nr+1 for nr in range(GAME_NUMBER_OF_GEMS)]
-        new_gem = choice(candidates)
-        return Gem(self._gems_group, self._gems_sheet, self._board_manager, pos, new_gem)
+        return Gem(self._gems_group, self._gems_sheet, self._board_manager, pos, choice(candidates))
     
 
 class Board_Manager():
