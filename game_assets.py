@@ -187,7 +187,6 @@ class Board_Manager():
         self._overs: list[Gem] = list()
         self._possibles: bool = False
         self._gems_ready = False
-        self.debug_rect: list[Rect] = []
 
     @property
     def board(self) -> Create_Board:
@@ -212,10 +211,6 @@ class Board_Manager():
     @property
     def match_gems(self) -> Match:
         return self._match_gems
-    
-    @property
-    def gems_are_moving(self) -> bool:
-        return self._gems_are_moving
 
     def _detect_pointer_with_gem_collision(self, events, game_status):
 
@@ -260,13 +255,10 @@ class Board_Manager():
         return False
     
     def check_gems_ready(self) -> bool:
-        ret = True
         for gem in self._gems_group:
             if gem.ready == False:
-                self.debug_rect.append(gem.rect)
-                ret = False
-
-        return ret
+                return False
+        return True
     
     def update(self, events, dt, game_status):
 
