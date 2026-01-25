@@ -1,16 +1,22 @@
-import pygame
+import pygame, sys
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
+from pygame.font import SysFont
 
 pygame.init()
 pygame.mixer.init()
+pygame.font.init()
 
 TRANSPARENT = (0, 0, 0, 0)
 BLACK_DARK = '#3b3b3b'
 BLACK_LIGHT = '#535353'
 SKIN_MEDIUM = '#e8c4a3'
+COLOR_TEXT_1 = "#E4421A"
 
 SND_SWAP_BACK = Sound('snd/swap_back.wav')
+
+TXT_NO_MORE_MOVES = pygame.image.load('gfx/no_more_moves.png')
+TXT_PRESS_ANY_KEY = pygame.image.load('gfx/press_any_key.png')
 
 SCR_WIDTH = 1734
 SCR_HEIGHT = 1044

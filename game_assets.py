@@ -201,11 +201,13 @@ class Board_Manager():
     def match_gems(self) -> Match:
         return self._match_gems
 
-    def _detect_pointer_with_gem_collision(self, events):
+    def _detect_pointer_with_gem_collision(self, events, game_status):
         if not self._check_moving_of_gems(self._match_gems.set_matching): return
         self._mouse_pointer.update()
         gem: Gem = pygame.sprite.spritecollideany(self._mouse_pointer, self._gems_group)        
         for event in events:
+            if game_status == 'game_over':
+                break
             if not self._swap_gems.swaping:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if gem != None:
@@ -234,8 +236,8 @@ class Board_Manager():
                 return False
         return True
     
-    def update(self, events, dt):
-        self._detect_pointer_with_gem_collision(events)
+    def update(self, events, dt, game_status):
+        self._detect_pointer_with_gem_collision(events, game_status)
 
         self._select_gem.select_group.update(dt)
         self._anim_group.update(dt)
