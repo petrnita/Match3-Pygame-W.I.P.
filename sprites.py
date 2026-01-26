@@ -91,7 +91,7 @@ class Fade_In(Sprite):
         self._screen_manager: Screen_Manager = screen_manager
         self.image: Surface = Surface((self._screen_manager.board_size.x, self._screen_manager.board_size.y), pygame.SRCALPHA)
         pygame.draw.rect(self.image, COLORS.SKIN_MEDIUM, self.image.get_rect())
-        self.rect = self.image.get_rect(topleft = self._screen_manager.board_offset)
+        self.rect = self.image.get_rect(topleft = vec())
         self.image.set_alpha(self._alpha)
 
     def update(self, dt):

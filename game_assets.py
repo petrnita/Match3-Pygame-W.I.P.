@@ -247,7 +247,7 @@ class Board_Manager():
                         Swap_Dirs(self._swapdir_group,
                                     self._screen_manager,
                                     self._select_gem.selected_gem1.bpos,
-                                    SWAP_DIRS.OFFSET+self._screen_manager.board_offset,
+                                    SWAP_DIRS.OFFSET,
                                     vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
                     else:
                         self._swapdir_group.empty()
@@ -273,8 +273,8 @@ class Board_Manager():
 
         self._select_gem.select_group.update(dt)
         self._anim_group.update(dt)
-        self._select_gem.select_group.draw(self._screen_manager.screens.Top)
-        self._swapdir_group.draw(self._screen_manager.screens.Top)
+        self._select_gem.select_group.draw(self._screen_manager.screens.Anim)
+        self._swapdir_group.draw(self._screen_manager.screens.Anim)
         self._anim_group.draw(self._screen_manager.screens.Anim)
 
         if self._select_gem.ready_to_swap:

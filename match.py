@@ -61,7 +61,7 @@ class Match():
                     lst_new_gems.append(new_gem)
                     new_gems[str(int(same.bpos.pos.x))] -= 1
                     Animation(self._board_manager.anim_group, same.bpos.gfx_pos,
-                                KILL_GEM.ANIM, KILL_GEM.SPEED, KILL_GEM.OFFSET+self._board_manager.screen_manager.board_offset, KILL_GEM.LOOP)
+                                KILL_GEM.ANIM, KILL_GEM.SPEED, KILL_GEM.OFFSET, KILL_GEM.LOOP)
                     same.kill()
                     self._board_manager.board.gems[int(same.bpos.pos.x)][int(same.bpos.pos.y)] = None
                 ret = True

@@ -40,9 +40,9 @@ class GameManager():
         self.debug_group.update(f'FPS: {self.clock.get_fps():.2f}')
 
     def draw(self):
-        self.gems_group.draw(self.screen_manager.screens.Gems)        
-        self.fade_group.draw(self.screen_manager.screens.Top)
-        self.text_group.draw(self.screen_manager.screens.Top)
+        self.gems_group.draw(self.screen_manager.screens.Board)        
+        self.fade_group.draw(self.screen_manager.screens.Anim)
+        self.text_group.draw(self.screen_manager.screens.Anim)
 
         self.debug_group.draw(self.screen_manager.screens.Main)
         
@@ -69,12 +69,12 @@ class GameManager():
                                 self.game_status = 'game_over'
                                 Fade_In(self.fade_group, self.screen_manager, 2)
                                 Text_Sprite(self.text_group,
-                                            vec(self.screen_manager.screens.Main.get_width()//2,
-                                                self.screen_manager.screens.Main.get_height()//2-32),
+                                            vec(self.screen_manager.screens.Board_con.get_width()//2,
+                                                self.screen_manager.screens.Board_con.get_height()//2-32),
                                                 TXT.NO_MORE_MOVES)
                                 Text_Sprite(self.text_group,
-                                            vec(self.screen_manager.screens.Main.get_width()//2,
-                                                self.screen_manager.screens.Main.get_height()//2+32),
+                                            vec(self.screen_manager.screens.Board_con.get_width()//2,
+                                                self.screen_manager.screens.Board_con.get_height()//2+32),
                                                 TXT.PRESS_ANY_KEY,
                                                 24)
 
