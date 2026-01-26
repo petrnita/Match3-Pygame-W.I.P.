@@ -226,7 +226,7 @@ class Board_Manager():
                 gem = _gem
 
         for event in events:
-            if game_status == 'game_over':
+            if game_status != 'play':
                 break
             if not self._swap_gems.swaping:
                 if event.type == pygame.MOUSEBUTTONDOWN:

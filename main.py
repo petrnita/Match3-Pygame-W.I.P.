@@ -26,6 +26,13 @@ class GameManager():
         self.debug_fps = Show_Text(self.debug_group, '', vec(12, 12))
 
     def update(self, events, dt):
+        if self.game_status == 'start':
+            if self.screen_manager.gems_offset.y < 0:
+                self.screen_manager.gems_offset.y += 400 * dt
+            else:
+                self.screen_manager.gems_offset.y = 0
+                self.game_status = 'play'
+            
         self.board_manager.update(events, dt, self.game_status)
         self.fade_group.update(dt)
         self.text_group.update(dt)

@@ -5,22 +5,23 @@ from consts import COLORS
 
 class Screen_Props():
     def __init__(self):
-        self.width: int = None
-        self.height: int = None
-        self.tile_size: vec = None
-        self.left: int = None
-        self.right: int = None
-        self.top: int = None
-        self.bottom: int = None
+        self.width: int
+        self.height: int
+        self.tile_size: vec
+        self.left: int
+        self.right: int
+        self.top: int
+        self.bottom: int
 
 
 class Screen_Layers():
     def __init__(self):
-        self.Main: Surface = None
-        self.Board: Surface = None
-        self.Gems: Surface = None
-        self.Anim: Surface = None
-        self.Top: Surface = None
+        self.Main: Surface
+        self.Board: Surface
+        self.Gems_Board: Surface
+        self.Gems: Surface
+        self.Anim: Surface
+        self.Top: Surface
 
 
 class Screen_Manager():
@@ -42,10 +43,13 @@ class Screen_Manager():
         self.board_offset: vec = vec(self.properities.left, self.properities.top)      
         self.screens.Board = Surface((self.board_size.x, self.board_size.y), pygame.SRCALPHA)
         self.screens.Board.blit(self.board_image, (0, 0))
+        self.screens.Gems_Board = self.screens.Board.copy().convert_alpha()
         self.screens.Gems = self.screens.Board.copy().convert_alpha()
+        self.gems_offset: vec = vec(0, self.board_offset.y-self.board_size.y-96-12)
 
     def paint_screen(self):
         self.screens.Main.blit(self.background, (0, 0))
+        self.screens.Gems_Board.fill(COLORS.TRANSPARENT)
         self.screens.Gems.fill(COLORS.TRANSPARENT)
         self.screens.Anim.fill(COLORS.TRANSPARENT)
         self.screens.Top.fill(COLORS.TRANSPARENT)
@@ -53,7 +57,8 @@ class Screen_Manager():
 
     def draw(self):
         self.screens.Main.blit(self.screens.Board, self.board_offset)
-        self.screens.Main.blit(self.screens.Gems, self.board_offset)
+        self.screens.Gems_Board.blit(self.screens.Gems, self.gems_offset)
+        self.screens.Main.blit(self.screens.Gems_Board, self.board_offset)
         self.screens.Main.blit(self.screens.Anim, (0, 0))
         self.screens.Main.blit(self.screens.Top, (0, 0))
 
