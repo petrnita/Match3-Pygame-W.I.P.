@@ -21,7 +21,7 @@ class Properities():
 class Colors():
     def __init__(self):
         self.TRANSPARENT = (0, 0, 0, 0)
-        self.SKIN_MEDIUM = '#e8c4a3'
+        self.SKIN_MEDIUM = '#806d5b'
 
 
 class Game_Props():

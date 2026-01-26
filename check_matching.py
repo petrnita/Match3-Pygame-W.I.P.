@@ -63,16 +63,17 @@ mask = [
 class Check_Matching():
     @classmethod
     def check(cls, board: list[Gem]) -> bool:
-        import sys
-        for x in range(int(GAME.BOARD_SIZE.x)):
-            for y in range(int(GAME.BOARD_SIZE.y)):
-                for m in mask:
+        for field_x in range(int(GAME.BOARD_SIZE.x)):
+            for field_y in range(int(GAME.BOARD_SIZE.y)):
+                for _mask in mask:
                     masked = set()
-                    for ir in range(len(m)):
-                        for ic in range(len(m[0])):
-                            if ir+y < int(GAME.BOARD_SIZE.y) and ic+x < int(GAME.BOARD_SIZE.x):
-                                if board[ic+x][ir+y] != None:
-                                    masked.add(board[ic+x][ir+y].number*m[ir][ic])
+                    for row in range(len(_mask)):
+                        for column in range(len(_mask[0])):
+                            masking_field = _mask[row][column]
+                            if row+field_y < int(GAME.BOARD_SIZE.y) and column+field_x < int(GAME.BOARD_SIZE.x):
+                                field = board[column+field_x][row+field_y]
+                                if field != None:
+                                    masked.add(field.number*masking_field)
                                 else:
                                     break
                             else:
