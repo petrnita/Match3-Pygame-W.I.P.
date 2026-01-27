@@ -1,16 +1,15 @@
 from pygame import Surface
-from pygame.math import Vector2 as vec
+
 
 
 class ImageSheet():
-    def __init__(self, sheet_img: Surface, frame_size: vec):
-        self._sheet_img: Surface = sheet_img
-        self._frame_size: vec = frame_size
+    def __init__(self, name: str, images: dict[Surface]):
+        self._images: dict[Surface] = images
         self._sheet = []
-        self._frames = self._sheet_img.get_width() // int(self._frame_size.x)
-        for x in range(self._frames):
-            clip: Surface = Surface.subsurface(self._sheet_img, (x*self._frame_size.x, 0, self._frame_size.x, self._frame_size.y))
-            self._sheet.append(clip)
+        for key, image in self._images.items():
+            if name in key:
+                self.sheet.append(image)
+        self._frames: int = len(self._sheet)
 
     @property
     def frames(self) -> int:

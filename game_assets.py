@@ -1,4 +1,4 @@
-from consts import COLORS, SND_SWAP_BACK, GEMS, GAME, SWAP_DIRS
+from consts import COLORS, SCREEN, SND_SWAP_BACK, GEMS, GAME, SWAP_DIRS
 import pygame
 from pygame import Rect, Surface
 from pygame.sprite import Sprite, Group, GroupSingle
@@ -22,7 +22,7 @@ class Gem(Sprite):
         super().__init__(group)
         self._gems_img: ImageSheet = gems_img
         self._board_manager = board_manager
-        self._size: vec = self._board_manager.screen_manager.properities.tile_size
+        self._size: vec = GEMS.SIZE
         self._offset: vec = GEMS.OFFSET
         self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
         self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
@@ -39,6 +39,10 @@ class Gem(Sprite):
         self.image: Surface = Surface((GEMS.SIZE.x, GEMS.SIZE.y), pygame.SRCALPHA)
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
         self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
+        self._fade_help = False
+        self._fade_alpha = 255
+        self._fade_speed = 8
+        self._fade_dir = -1
 
     @property
     def bpos(self) -> BoardPosition:
@@ -67,6 +71,14 @@ class Gem(Sprite):
     @property
     def ready(self) -> bool:
         return self._ready
+    
+    @property
+    def fade_help(self) -> bool:
+        return self._fade_help
+
+    @fade_help.setter
+    def fade_help(self, value: bool):
+        self._fade_help = value
 
     def change_pos(self):
         self._direction = vec.normalize(self._new_bpos.pos - self._bpos.pos)
@@ -113,6 +125,20 @@ class Gem(Sprite):
         return False
     
     def update(self, dt):
+
+        if self._fade_help:
+            if max(0, self._fade_alpha) == 0:
+                self._fade_alpha = 0
+                self._fade_dir = -self._fade_dir
+            if min(255, self._fade_alpha) == 255:
+                self._fade_alpha = 255
+                self._fade_dir = -self._fade_dir
+
+            self._fade_alpha += self._fade_speed * self._fade_dir
+            self.image.set_alpha(self._fade_alpha)
+        else:
+            self.image.set_alpha(255)
+            self._fade_dir = -1
 
         self._fall()
 
@@ -176,7 +202,7 @@ class Board_Manager():
         self._screen_manager: Screen_Manager = screen_manager
         self._board: Create_Board = Create_Board(self,
                                                  self._gems_group,
-                                                 ImageSheet(GEMS.IMAGE, GEMS.SIZE),
+                                                 ImageSheet('gem_', SCREEN.ELEMENTS),
                                                  GAME.NUMBER_OF_GEMS)
         self._select_gem: Select_Gem = Select_Gem(self._screen_manager)
         self._swapdir_group: GroupSingle = GroupSingle()
@@ -187,6 +213,7 @@ class Board_Manager():
         self._overs: list[Gem] = list()
         self._possibles: bool = False
         self._gems_ready = False
+        self._help_gem: Gem = None
 
     @property
     def screen_manager(self):
@@ -215,6 +242,14 @@ class Board_Manager():
     @property
     def match_gems(self) -> Match:
         return self._match_gems
+    
+    @property
+    def help_gem(self) -> Gem:
+        return self._help_gem
+    
+    @help_gem.setter
+    def help_gem(self, value: Gem | None):
+        self._help_gem = value
 
     def _detect_pointer_with_gem_collision(self, events, game_status):
 
@@ -222,7 +257,7 @@ class Board_Manager():
 
         gem: Gem = None
         for _gem in self._gems_group:
-            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - self._screen_manager.board_offset)):
+            if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - SCREEN.POSITIONS['board'])):
                 gem = _gem
 
         for event in events:
@@ -245,8 +280,8 @@ class Board_Manager():
                         self._overs.append(gem)
                     if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
                         Swap_Dirs(self._swapdir_group,
-                                    self._screen_manager,
                                     self._select_gem.selected_gem1.bpos,
+                                    SWAP_DIRS.ANIM,
                                     SWAP_DIRS.OFFSET,
                                     vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
                     else:
