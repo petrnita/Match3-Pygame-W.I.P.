@@ -54,24 +54,6 @@ class Screen_Layout():
     def IMAGE(self) -> Surface:
         return self._IMAGE
 
-    # @property
-    # def WIDTH(self) -> int:
-    #     return self._WIDTH
-    
-    # @WIDTH.setter
-    # def WIDTH(self, value: int):
-    #     self._WIDTH = value
-    #     self._SIZE = (self._WIDTH, self._HEIGHT)
-
-    # @property
-    # def HEIGHT(self) -> int:
-    #     return self._HEIGHT
-    
-    # @HEIGHT.setter
-    # def HEIGHT(self, value: int):
-    #     self._HEIGHT = value
-    #     self._SIZE = (self._WIDTH, self._HEIGHT)
-
     @property
     def SIZE(self) -> tuple:
         return self._SIZE
