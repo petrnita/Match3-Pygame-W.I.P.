@@ -66,29 +66,25 @@ class GameManager():
                 if event.type == self.check_board:        
                     if self.game_status != 'game_over':
                         if self.board_manager.check_gems_ready() and not self.board_manager._swap_gems.swaping:
-                            self.find_gem, direction_help = Check_Matching.check(self.board_manager.board.gems)
-                            if not self.find_gem:
-                                self.game_status = 'game_over'
-                                Fade_In(self.fade_group, 2)
-                                Text_Sprite(self.text_group, TXT_NO_MOVE.OFFSET, TXT_NO_MOVE.IMAGE)
-                                # Text_Sprite(self.text_group,
-                                #             vec(self.screen_manager.screens.Board_con.get_width()//2,
-                                #                 self.screen_manager.screens.Board_con.get_height()//2+32),
-                                #                 TXT.PRESS_ANY_KEY,
-                                #                 24)
-                            else:
-                                self.help_counter += 1
-                                print(f'{self.help_counter=}')
-                            if self.help_counter == 3:
-                                self.find_gem.fade_help = True
-                                self.board_manager.help_gem = self.find_gem
-                                Debug_Rect(self.fade_group, self.find_gem.rect.topleft)
-                                self.help_counter = 0
-                                Swap_Dirs(self.fade_group,
-                                            self.find_gem.bpos,
-                                            SWAP_DIRS.ANIM,
-                                            SWAP_DIRS.OFFSET,
-                                            (direction_help))
+                            if not self.board_manager.select_gem.selected_gem1:
+                                self.find_gem, direction_help = Check_Matching.check(self.board_manager.board.gems)
+                                if not self.find_gem:
+                                    self.game_status = 'game_over'
+                                    Fade_In(self.fade_group, 2)
+                                    Text_Sprite(self.text_group, TXT_NO_MOVE.OFFSET, TXT_NO_MOVE.IMAGE)
+                                else:
+                                    self.help_counter += 1
+                                    print(f'{self.help_counter=}')
+                                if self.help_counter == 3:
+                                    self.find_gem.fade_help = True
+                                    self.board_manager.help_gem = self.find_gem
+                                    Debug_Rect(self.fade_group, self.find_gem.rect.topleft)
+                                    self.help_counter = 0
+                                    Swap_Dirs(self.fade_group,
+                                                self.find_gem.bpos,
+                                                SWAP_DIRS.ANIM,
+                                                SWAP_DIRS.OFFSET,
+                                                (direction_help))
                                        
             self.screen_manager.paint_screen()
 

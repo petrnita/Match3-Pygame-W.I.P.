@@ -222,6 +222,10 @@ class Board_Manager():
     @property
     def board(self) -> Create_Board:
         return self._board
+    
+    @property
+    def select_gem(self) -> Select_Gem:
+        return self._select_gem
 
     @property
     def swapdir_group(self) -> GroupSingle:
