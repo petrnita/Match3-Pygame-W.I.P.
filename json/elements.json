@@ -23,11 +23,11 @@
   "slices": [
    { "name": "title", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 16, "w": 1408, "h": 112 } }] },
    { "name": "board", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 144, "w": 768, "h": 864 } }] },
-   { "name": "time_bar", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 144, "w": 800, "h": 64 } }] },
+   { "name": "time_bar_top", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 144, "w": 800, "h": 64 } }] },
    { "name": "time_bar_progress", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 224, "w": 800, "h": 64 } }] },
    { "name": "time_bar_back", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 304, "w": 800, "h": 64 } }] },
    { "name": "no_move", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 384, "w": 576, "h": 96 } }] },
-   { "name": "bar", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1392, "y": 384, "w": 320, "h": 96 } }] },
+   { "name": "bar_top", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1392, "y": 384, "w": 320, "h": 96 } }] },
    { "name": "bar_back", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1392, "y": 496, "w": 320, "h": 96 } }] },
    { "name": "bar_empty", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1392, "y": 608, "w": 320, "h": 96 } }] },
    { "name": "bar_1", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1056, "y": 496, "w": 320, "h": 96 } }] },

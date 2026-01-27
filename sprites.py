@@ -56,6 +56,16 @@ class Swap_Dirs(Sprite):
         self.rect: Rect = self.image.get_rect(topleft=self._pos.gfx_pos+self._offset)
 
 
+class Bar(Sprite):
+    def __init__(self, group: Group, pos: vec, img_sheet: dict[Surface], bar_type: str):
+        super().__init__(group)
+        self._pos: vec = pos
+        self._image_sheet: dict[Surface] = img_sheet
+        self._bar_type: str = bar_type
+        
+
+
+
 class Text_Sprite(Sprite):
     def __init__(self, group: Group, pos: vec, image: Surface, blink_speed: int=0):
         super().__init__(group)

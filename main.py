@@ -32,7 +32,7 @@ class GameManager():
         self.fade_group.update(dt)
         self.text_group.update(dt)
 
-        self.debug_group.update(f'FPS: {self.clock.get_fps():.2f}')
+        self.debug_group.update(f'FPS: {int(self.clock.get_fps())}')
 
     def draw(self):
         self.gems_group.draw(self.screen_manager.screens.Board)        
