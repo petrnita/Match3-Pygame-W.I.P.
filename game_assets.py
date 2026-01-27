@@ -5,11 +5,11 @@ from pygame.sprite import Sprite, Group, GroupSingle
 from pygame.math import Vector2 as vec
 from random import choice
 from screen_manager import Screen_Manager
-from graphic import ImageSheet
 from gem_select import Select_Gem
 from swap_gem import Swap_Gem
 from match import Match
 from sprites import Swap_Dirs
+from graphic import ImageSheet
 from resources import BoardPosition
 
 

@@ -1,7 +1,6 @@
 from pygame import Surface
 
 
-
 class ImageSheet():
     def __init__(self, name: str, images: dict[Surface]):
         self._images: dict[Surface] = images

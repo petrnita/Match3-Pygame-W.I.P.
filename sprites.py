@@ -3,9 +3,9 @@ from pygame import Rect, Surface
 from pygame.sprite import Group, GroupSingle, Sprite
 from pygame.math import Vector2 as vec
 from consts import COLORS, SCREEN, GEMS
-from graphic import ImageSheet
 from resources import BoardPosition
-
+from graphic import ImageSheet
+    
 
 class Animation(Sprite):
     def __init__(self, group: Group | GroupSingle,
