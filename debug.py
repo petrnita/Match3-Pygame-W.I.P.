@@ -1,6 +1,6 @@
 import pygame
-from pygame import Surface
-from pygame.sprite import Rect, Sprite, Group
+from pygame import Rect, Surface
+from pygame.sprite import Sprite, Group
 from pygame.math import Vector2 as vec
 from pygame.font import SysFont
 
