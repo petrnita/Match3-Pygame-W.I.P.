@@ -74,7 +74,6 @@ class GameManager():
                                     Text_Sprite(self.text_group, TXT_NO_MOVE.OFFSET, TXT_NO_MOVE.IMAGE)
                                 else:
                                     self.help_counter += 1
-                                    print(f'{self.help_counter=}')
                                 if self.help_counter == 3:
                                     self.find_gem.fade_help = True
                                     self.board_manager.help_gem = self.find_gem
