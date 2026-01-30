@@ -22,10 +22,9 @@
    { "name": "Layer 2", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
+   { "name": "extra_move", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 336, "y": 32, "w": 288, "h": 96 } }] },
+   { "name": "double_damage", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 32, "w": 304, "h": 96 } }] },
    { "name": "hand_cursor", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1616, "y": 272, "w": 64, "h": 64 } }] },
-   { "name": "title_anim_left", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1568, "y": 16, "w": 112, "h": 112 } }] },
-   { "name": "title_anim_right", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1440, "y": 16, "w": 112, "h": 112 } }] },
-   { "name": "title_mask", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 16, "w": 1408, "h": 112 } }] },
    { "name": "time_bar_empty", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 800, "y": 512, "w": 800, "h": 64 } }] },
    { "name": "title", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 144, "w": 1408, "h": 112 } }] },
    { "name": "board", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 16, "y": 352, "w": 768, "h": 864 } }] },

@@ -64,30 +64,35 @@ class Bar(Sprite):
         self._bar_type: str = bar_type
         self._player: str = player
         self._scale = 264/100 if player in ['player', 'cpu'] else 752/100
-        self._value = 100
-        self._old_value = self._value
-        self._min_value = -300 if player in ['player', 'time'] else 300
-        self._empty = False
-        self._direction = 1 if player in ['player', 'time'] else -1 
+        self._value: int = 100
+        self._old_value: int = 0
+        self._min_value: int = -300 if player in ['player', 'time'] else 300
+        self._empty: bool = False
+        self._direction: int = 1 if player in ['player', 'time'] else -1 
         self._pos: vec = SCREEN.POSITIONS[f'{self._player}_bar_{bar_color}']
         self._img_back: Surface = self._image_sheet[f'{bar_type}_bar_back']
         self._img_progress: Surface = self._image_sheet[f'{bar_type}_bar_{bar_color}']
         self._img_top: Surface = self._image_sheet[f'{bar_type}_bar_top']
         self._img_empty: Surface = self._image_sheet[f'{bar_type}_bar_empty']
         self.image: Surface = Surface(self._img_top.get_size(), pygame.SRCALPHA)
-        self.update(100)
         self.rect: Rect = self.image.get_rect(topleft=self._pos)
         self._empty_image = self.image.copy()
         self._empty_image.blit(self._img_back, (0, 0))
 
-    def update(self, value):
-        if self._old_value != value and self._empty:
-            self._empty = False
+    @property
+    def value(self) -> int:
+        return self._value
+    
+    @value.setter
+    def value(self, value: int):
         self._value = value
-        if self._old_value != value:
-            self._old_value = self._value
-            if value > 0:
-                bar_width = self._scale * value
+
+    def update(self, dt):
+        if self._old_value != self._value:
+            if self._empty:
+                self._empty = False    
+            if self._value > 0:
+                bar_width = self._scale * self._value
                 offset = (-self._direction * self._scale * 100) + bar_width * self._direction 
             else:
                 self._empty = True
@@ -98,7 +103,7 @@ class Bar(Sprite):
             else:
                 self.image.blit(self._img_empty, (0, 0))
             self.image.blit(self._img_top, (0, 0))
-        
+            self._old_value = self._value
 
 class Player_Text(Sprite):
     def __init__(self, group: Group, pos: vec, player: str):

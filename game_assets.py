@@ -11,8 +11,12 @@ from match import Match
 from sprites import Swap_Dirs, Debug_Rect
 from graphic import ImageSheet
 from resources import BoardPosition
-import numpy
+import numpy as np
 
+from pygame.font import SysFont
+
+pygame.font.init
+debugfont = SysFont('Arial', 16, True)
 
 class Gem(Sprite):
     def __init__(self, group: Group,
@@ -41,6 +45,8 @@ class Gem(Sprite):
         self._frame: int = 0
         self.image: Surface = Surface((GEMS.SIZE.x, GEMS.SIZE.y), pygame.SRCALPHA)
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
+        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
+        self.image.blit(idtext, (3, 3))
         self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
 
         #self.debug_rect = Debug_Rect(self._board_manager.swapdir_group, self.id, self.rect.topleft, self._new_bpos.gfx_pos, self._velocity)
@@ -74,11 +80,11 @@ class Gem(Sprite):
         return self._ready
 
     def change_pos(self):
+        self._ready = False
         direction: vec = self._new_bpos.pos - self._bpos.pos
         if vec(direction).length() > 0:
             self._direction = vec.normalize(direction)
         self._velocity = self._direction * self._speed
-        self._ready = False
 
     def reset_state(self):
         self._frame = 0
@@ -108,6 +114,9 @@ class Gem(Sprite):
         return f'{self._number} <{self.id}>'
     
     def update(self, dt):
+
+        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
+        self.image.blit(idtext, (3, 3))
 
         self._dt = dt
 
@@ -148,7 +157,7 @@ class Create_Board():
         self._gems = value
 
     def _make_board(self) -> list[Gem]:
-        gems = numpy.empty(shape=(int(self._size.x), int(self._size.y)), dtype=object)
+        gems = np.empty(shape=(int(self._size.x), int(self._size.y)), dtype=object)
 
         for x in range(int(self._size.y)):
             for y in range(int(self._size.x)):
@@ -188,14 +197,14 @@ class Create_Board():
         return wrapper
 
     @exec_time
-    def shuffle(self, board: list[Gem]) -> numpy.ndarray:
-        temp_board = numpy.empty(shape=(int(self._size.x), int(self._size.y)),dtype=object)
-        rng = numpy.random.default_rng()
-        _board = rng.permuted(numpy.array(board, dtype=Gem))
+    def shuffle(self, board: list[Gem]) -> np.ndarray:
+        temp_board = np.empty(shape=(int(self._size.x), int(self._size.y)),dtype=object)
+        rng = np.random.default_rng()
+        _board = rng.permuted(np.array(board, dtype=Gem))
         _board = rng.permuted(_board, axis=1)
         #print('***')
         #print(_board)
-        _board_con = numpy.concatenate(_board)
+        _board_con = np.concatenate(_board)
         for x in range(int(self._size.x)):
             for y in range(int(self._size.y)):
                 #rint()
@@ -206,10 +215,10 @@ class Create_Board():
                     if gem.number in numbers:
                         temp_board[x, y] = gem
                         #print(f'{gem}', end=' > ')
-                        _board_con = numpy.delete(_board_con, i, 0)
+                        _board_con = np.delete(_board_con, i, 0)
                         #print(_board_con, end= ' >>> ')
-                        temp_board[x, y].new_bpos.pos = vec(x, y)
-                        temp_board[x, y].change_pos()
+                        # temp_board[x, y].new_bpos.pos = vec(x, y)
+                        # temp_board[x, y].change_pos()
                         break
                 else:
                     #print('error!', end=' > ')
@@ -237,9 +246,9 @@ class Board_Manager():
         self._match_gems: Match = Match(self)
         self._overs: list[Gem] = list()
         self._possibles: bool = False
-        self._gems_ready = False
         self._match: bool = False
         self._gems_matching: set = set()
+        self._ready_to_falling: bool = False
 
     @property
     def screen_manager(self):
@@ -295,7 +304,7 @@ class Board_Manager():
 
     def _detect_pointer_with_gem_collision(self, events, game_status, player):
 
-        if not self._gems_ready: return
+        if not self.gems_end_moving(self._board.gems): return
 
         gem: Gem = None
         for _gem in self._gems_group:
@@ -327,23 +336,23 @@ class Board_Manager():
                                         SWAP_DIRS.ANIM,
                                         SWAP_DIRS.OFFSET,
                                         vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
-
-    def _check_swaped_gems(self, gems: set[Gem]) -> bool:
-        if len(gems) == 0: return False
-        for gem in gems:
-            if not gem.ready:
-                return True
-        return False
     
-    def gems_end_moving(self) -> bool:
-        for gem in self._gems_group:
-            if gem.ready == False:
-                return False
+    def gems_end_moving(self, gems: set[Gem] | list[Gem]) -> bool:
+        if len(gems) == 0: return False
+        if isinstance(gems[0], list):
+            _gems = np.concatenate((gems), dtype=Gem)
+        else:
+            _gems = gems
+        for gem in _gems:
+            if gem == None: return False
+            if not gem.ready: return False
         return True
     
-    def update(self, events, dt, game_status, player):
+    def board_is_ready(self) -> bool:
+        if not self.gems_end_moving(self.board.gems): return False
+        return True
 
-        self._gems_ready = self.gems_end_moving()
+    def update(self, events, dt, game_status, player):
 
         self._detect_pointer_with_gem_collision(events, game_status, player)
 
@@ -357,30 +366,30 @@ class Board_Manager():
             self._swap_gems.swap(None)
 
         if self._swap_gems.swaping:
-            if not self._check_swaped_gems([self._swap_gems.gem1, self._swap_gems.gem2]):
+            if self.gems_end_moving([self._swap_gems.gem1, self._swap_gems.gem2]):
                 self._match_gems.add_to_matching(self._swap_gems.gem1)
                 self._match_gems.add_to_matching(self._swap_gems.gem2)
                 self._match, self._gems_matching = self._match_gems.match()
                 if self._match:
-                    #print('board_manager > match = true')
                     self._swap_gems.swaping = False
                 else:
                     self._swap_gems.swap(SND_SWAP_BACK)
                 self._swap_gems.clear_swap()
                 self._select_gem.clear()
 
-            if not self.board_is_idle():
-                print('board is not idle')
+        if self.board_is_ready():
+            if len(self._match_gems.set_matching) > 0:
+                self._match_gems.match()
                                 
 
         self._gems_group.update(dt)
         self._anim_group.update(dt)
         self._anim_group.draw(self.screen_manager.screens.Anim)
     
-    def board_is_idle(self) -> bool:
-        if not self.gems_end_moving(): return False
-        if len(self._match_gems.set_matching) > 0:
-            self._match_gems.match()
-            print(f'{self._match_gems.set_matching=}')
-            return False
-        return True
+    def rearange_board(self, new_board: list[Gem]):
+        for x in range(int(GAME.BOARD_SIZE.x)):
+            for y in range(int(GAME.BOARD_SIZE.y)):
+                self.board.gems[x][y] = new_board[x][y]
+                self.board.gems[x][y].new_bpos.pos = vec(x, y)
+                self.board.gems[x][y].change_pos()
+            

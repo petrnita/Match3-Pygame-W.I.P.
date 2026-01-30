@@ -1,6 +1,6 @@
 from pygame.math import Vector2 as vec
 from game_assets import Gem
-import json
+import time
 import numpy as np
 
 '''
@@ -27,14 +27,18 @@ masks = [
     [0, 1, 0, 0],
     [0, 1, 0, 0]],
 
-    [[0, 0, 1, 0],
-    [1, 1, -1, 2],
+    [[0, 0, 2, 0],
+    [1, 1, -1, 1],
     [0, 0, 1, 0],
     [0, 0, 1, 0]],
 
     [[2, -1, 1, 1],
     [0, 1, 0, 0],
     [0, 1, 0, 0]],
+
+    [[0, 1, 0, 0],
+    [0, 1, 0, 0],
+    [2, -1, 1,1]],
 
     [[0, 1, 0, 0],
     [2, -1, 1, 1],
@@ -46,10 +50,8 @@ masks = [
     [[0, 2, 0, 0],
     [1, -1, 1, 1]],
 
-    [[1, 0],
-    [-1, 2],
-    [1, 0],
-    [1, 0]],
+    [[0, 0, 2, 0],
+    [1, 1, -1, 1]],
         
     [[1, 1, -1, 2]],
 
@@ -59,9 +61,8 @@ masks = [
     [[2, 0, 0],
     [-1, 1, 1]],
 
-    [[2, -1],
-    [0, 1],
-    [0, 1]]
+    [[0, 0, 2],
+    [1, 1, -1]],
 ]
 
 def load_masks(data: list) -> list:
@@ -78,16 +79,20 @@ class Check_Matching():
     _masks = load_masks(masks)
     @classmethod
     def check(cls, board: list[Gem]) -> list[Gem, vec] | list[None]:
-        rng = np.random.default_rng()
-        if np.random.choice([False, True]):
-            rng.shuffle(masks)
+        # rng = np.random.default_rng()
+        # if np.random.choice([False, True]):
+        #     rng.shuffle(masks)
         for mask in cls._masks:
             for row, board_row in enumerate(board):
                 for column, _ in enumerate(board_row):
                     lst = list(cls.get_mask_area_from_board(board, mask, (row, column)))
-                    if len(lst) == len([item for row in mask for item in row]):
-                        if len(set(lst)) == 2:
-                            print(lst)
+                    numbers = [x[0] for x in lst]
+                    ids = [x[1] for x in lst]
+                    if len(numbers) == len([item for row in mask for item in row]):
+                        if len(set(numbers)) == 2:
+                            print(time.time())
+                            print(f'{np.transpose(np.array(numbers).reshape([len(mask), len(mask[0])]), (1, 0))} > [{row=} {column=}]')
+                            print(f'{np.transpose(np.array(ids).reshape([len(mask), len(mask[0])]), (1, 0))}')
                             find_gem = np.where(np.array(mask, dtype=int)==2)
                             direction = np.where(np.array(mask, dtype=int)==-1)
                             return (board[row+find_gem[0][0]][column+find_gem[1][0]],
@@ -101,4 +106,4 @@ class Check_Matching():
             for ic, column in enumerate(row):
                 if ir+offset[0] < len(board) and ic+offset[1] < len(board[0]):
                     mask_value = column // column if column > 0 else 0
-                    yield board[ir+offset[0]][ic+offset[1]].number * mask_value
+                    yield board[ir+offset[0]][ic+offset[1]].number * mask_value, board[ir+offset[0]][ic+offset[1]].id

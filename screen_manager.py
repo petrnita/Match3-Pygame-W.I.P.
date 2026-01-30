@@ -20,6 +20,7 @@ class Screen_Manager():
         self.screens.Board = Surface((SCREEN.ELEMENTS_RECTS['board'].w, SCREEN.ELEMENTS_RECTS['board'].h)).convert_alpha()
         self.screens.Anim = self.screens.Board.copy().convert_alpha()
         self.screens.Top = self.screens.Main.copy().convert_alpha()
+        self.debug_shuffle = False
 
     def paint_screen(self):
         self.screens.Main.blit(SCREEN.IMAGE, (0, 0))
@@ -34,5 +35,12 @@ class Screen_Manager():
         self.screens.Main.blit(self.screens.Top, (0, 0))
 
         pygame.display.flip()
+        if self.debug_shuffle:
+            self.debug_shuffle = False
+            self.print_screen()
+
+    def print_screen(self):
+        image = self.screens.Main.subsurface(SCREEN.POSITIONS_RECTS['board'])
+        pygame.image.save(image, 'gfx/screenshot.png')
 
 
