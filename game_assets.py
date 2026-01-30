@@ -293,7 +293,7 @@ class Board_Manager():
     def gems_matching(self) -> set:
         return self._gems_matching
 
-    def _detect_pointer_with_gem_collision(self, events, game_status):
+    def _detect_pointer_with_gem_collision(self, events, game_status, player):
 
         if not self._gems_ready: return
 
@@ -302,30 +302,31 @@ class Board_Manager():
             if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - SCREEN.POSITIONS['board'] - MOUSE_OFFSET)):
                 gem = _gem
 
-        for event in events:
-            if game_status != 'play':
-                break
-            if not self._swap_gems.swaping:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if gem != None:
-                        self._select_gem.try_select(gem)
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if gem != None and self._select_gem.selected_gem1 != None and gem != self._select_gem.selected_gem1:
-                        self._select_gem.try_select(gem, False)
-                if event.type == pygame.MOUSEMOTION:
-                    if gem and not gem in self._overs:
-                        gem.state = 'over'
-                        if len(self._overs) > 0:
-                            self._overs[0].state = 'idle'
-                            self._overs[0].reset_state()
-                        self._overs.clear()
-                        self._overs.append(gem)
-                    if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
-                        Swap_Dirs(self._swapdir_group,
-                                    self._select_gem.selected_gem1.bpos,
-                                    SWAP_DIRS.ANIM,
-                                    SWAP_DIRS.OFFSET,
-                                    vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
+        if player == 'Player':
+            for event in events:
+                if game_status != 'play':
+                    break
+                if not self._swap_gems.swaping:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if gem != None:
+                            self._select_gem.try_select(gem)
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        if gem != None and self._select_gem.selected_gem1 != None and gem != self._select_gem.selected_gem1:
+                            self._select_gem.try_select(gem, False)
+                    if event.type == pygame.MOUSEMOTION:
+                        if gem and not gem in self._overs:
+                            gem.state = 'over'
+                            if len(self._overs) > 0:
+                                self._overs[0].state = 'idle'
+                                self._overs[0].reset_state()
+                            self._overs.clear()
+                            self._overs.append(gem)
+                        if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
+                            Swap_Dirs(self._swapdir_group,
+                                        self._select_gem.selected_gem1.bpos,
+                                        SWAP_DIRS.ANIM,
+                                        SWAP_DIRS.OFFSET,
+                                        vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
 
     def _check_swaped_gems(self, gems: set[Gem]) -> bool:
         if len(gems) == 0: return False
@@ -334,17 +335,17 @@ class Board_Manager():
                 return True
         return False
     
-    def check_all_gems_ready(self) -> bool:
+    def gems_end_moving(self) -> bool:
         for gem in self._gems_group:
             if gem.ready == False:
                 return False
         return True
     
-    def update(self, events, dt, game_status):
+    def update(self, events, dt, game_status, player):
 
-        self._gems_ready = self.check_all_gems_ready()
+        self._gems_ready = self.gems_end_moving()
 
-        self._detect_pointer_with_gem_collision(events, game_status)
+        self._detect_pointer_with_gem_collision(events, game_status, player)
 
         self._select_gem.select_group.update(dt)
         self._select_gem.select_group.draw(self._screen_manager.screens.Anim)
@@ -368,12 +369,18 @@ class Board_Manager():
                 self._swap_gems.clear_swap()
                 self._select_gem.clear()
 
-        if self.check_all_gems_ready():
-            if len(self._match_gems.set_matching) > 0:
-                self._match_gems.match()
+            if not self.board_is_idle():
+                print('board is not idle')
+                                
 
         self._gems_group.update(dt)
         self._anim_group.update(dt)
         self._anim_group.draw(self.screen_manager.screens.Anim)
-        
-
+    
+    def board_is_idle(self) -> bool:
+        if not self.gems_end_moving(): return False
+        if len(self._match_gems.set_matching) > 0:
+            self._match_gems.match()
+            print(f'{self._match_gems.set_matching=}')
+            return False
+        return True

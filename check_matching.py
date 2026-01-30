@@ -1,6 +1,7 @@
 from pygame.math import Vector2 as vec
 from game_assets import Gem
 import json
+import numpy as np
 
 '''
     The class checks whether there is at least one possible match on the game board.
@@ -15,26 +16,82 @@ import json
                 If so, the function terminates and returns True.
 If this case is not detected after iterating through the entire board, it returns False.
 '''
+masks = [
+    [[0, 0, 2, 0, 0],
+    [1, 1, -1, 1, 1],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0]],
+        
+    [[0, 2, 0, 0],
+    [1, -1, 1, 1],
+    [0, 1, 0, 0],
+    [0, 1, 0, 0]],
 
-def load_masks(file: str) -> list:
-    with open(file, 'r') as file:
-        data = json.load(file)
-    return data['masks']
+    [[0, 0, 1, 0],
+    [1, 1, -1, 2],
+    [0, 0, 1, 0],
+    [0, 0, 1, 0]],
+
+    [[2, -1, 1, 1],
+    [0, 1, 0, 0],
+    [0, 1, 0, 0]],
+
+    [[0, 1, 0, 0],
+    [2, -1, 1, 1],
+    [0, 1, 0, 0]],
+
+    [[0, 0, 2, 0, 0],
+    [1, 1, -1, 1, 1]],
+
+    [[0, 2, 0, 0],
+    [1, -1, 1, 1]],
+
+    [[1, 0],
+    [-1, 2],
+    [1, 0],
+    [1, 0]],
+        
+    [[1, 1, -1, 2]],
+
+    [[0, 2, 0],
+    [1, -1, 1]],
+ 
+    [[2, 0, 0],
+    [-1, 1, 1]],
+
+    [[2, -1],
+    [0, 1],
+    [0, 1]]
+]
+
+def load_masks(data: list) -> list:
+    _np_data = np.zeros([len(data)*4], dtype=object)
+    for i, d in enumerate(data):
+        _np_d = np.array(d)
+        _np_data[i*4] = _np_d
+        for j in range(1, 4):
+            _np_data[i*4+j] = np.rot90(_np_d, k=j)
+    return _np_data.tolist()
+
 
 class Check_Matching():
-    masks = load_masks('json/masks.json')
+    _masks = load_masks(masks)
     @classmethod
     def check(cls, board: list[Gem]) -> list[Gem, vec] | list[None]:
-        cls.move_help: list = None
-        cls.direction_help: list = None
-        for mask in cls.masks:
+        rng = np.random.default_rng()
+        if np.random.choice([False, True]):
+            rng.shuffle(masks)
+        for mask in cls._masks:
             for row, board_row in enumerate(board):
                 for column, _ in enumerate(board_row):
                     lst = list(cls.get_mask_area_from_board(board, mask, (row, column)))
                     if len(lst) == len([item for row in mask for item in row]):
                         if len(set(lst)) == 2:
-                            return (board[row+cls.move_help[0]][column+cls.move_help[1]],
-                                    vec(cls.direction_help[0]-cls.move_help[0], cls.direction_help[1]-cls.move_help[1]))
+                            print(lst)
+                            find_gem = np.where(np.array(mask, dtype=int)==2)
+                            direction = np.where(np.array(mask, dtype=int)==-1)
+                            return (board[row+find_gem[0][0]][column+find_gem[1][0]],
+                                    vec(direction[0]-find_gem[0][0], direction[1]-find_gem[1][0]))
                 
         return [None, None]
 
@@ -42,8 +99,6 @@ class Check_Matching():
     def get_mask_area_from_board(board: list[Gem], mask, offset):
         for ir, row in enumerate(mask):
             for ic, column in enumerate(row):
-                if column == 2: __class__.move_help = [ir, ic]
-                if column == -1: __class__.direction_help = [ir, ic]
                 if ir+offset[0] < len(board) and ic+offset[1] < len(board[0]):
                     mask_value = column // column if column > 0 else 0
                     yield board[ir+offset[0]][ic+offset[1]].number * mask_value

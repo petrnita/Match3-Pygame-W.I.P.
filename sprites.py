@@ -28,11 +28,10 @@ class Animation(Sprite):
 
     def update(self, dt: float):
         if self._frame < self._frames - 1:
-            self._frame += 1 * self._speed * dt
+            self._frame += self._speed * dt
         else:
             self._frame = 0
             if not self._loop: self.kill()
-
         self.image = self._anim.sheet[int(self._frame)].convert_alpha()
 
 
