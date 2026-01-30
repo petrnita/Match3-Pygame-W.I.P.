@@ -1,5 +1,7 @@
+import pygame
+from pygame import Rect
 from pygame.math import Vector2 as vec
-
+from consts import SCREEN
 
 class BoardPosition():
     def __init__(self, pos: vec, tile_size: vec, offset: vec=vec()):
@@ -32,3 +34,4 @@ class BoardPosition():
     @property
     def offset(self) -> vec:
         return self._offset
+    

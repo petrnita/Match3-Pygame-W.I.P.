@@ -40,8 +40,11 @@ class Swap_Gem():
         self._board_manager.swapdir_group.empty()
         self._gem1.new_bpos.pos = self._gem2.bpos.pos
         self._gem1.change_pos()
+        self.gem1.state = 'swap'
         self._gem2.new_bpos.pos = self._gem1.bpos.pos
         self._gem2.change_pos()
+        self.gem2.state = 'swap'
+
 
     def clear_swap(self):
         self._gem1 = None

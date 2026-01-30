@@ -24,21 +24,22 @@ def load_masks(file: str) -> list:
 class Check_Matching():
     masks = load_masks('json/masks.json')
     @classmethod
-    def check(cls, board: list[Gem]) -> list[Gem, vec] | None:
-        cls.move_help = None
-        cls.direction_help = None
+    def check(cls, board: list[Gem]) -> list[Gem, vec] | list[None]:
+        cls.move_help: list = None
+        cls.direction_help: list = None
         for mask in cls.masks:
             for row, board_row in enumerate(board):
                 for column, _ in enumerate(board_row):
                     lst = list(cls.get_mask_area_from_board(board, mask, (row, column)))
                     if len(lst) == len([item for row in mask for item in row]):
                         if len(set(lst)) == 2:
-                            return (board[row+__class__.move_help[0]][column+__class__.move_help[1]],
-                                    vec(__class__.direction_help[0]-__class__.move_help[0], __class__.direction_help[1]-__class__.move_help[1])) 
-        return (None, None)
+                            return (board[row+cls.move_help[0]][column+cls.move_help[1]],
+                                    vec(cls.direction_help[0]-cls.move_help[0], cls.direction_help[1]-cls.move_help[1]))
+                
+        return [None, None]
 
     @staticmethod
-    def get_mask_area_from_board(board, mask, offset):
+    def get_mask_area_from_board(board: list[Gem], mask, offset):
         for ir, row in enumerate(mask):
             for ic, column in enumerate(row):
                 if column == 2: __class__.move_help = [ir, ic]

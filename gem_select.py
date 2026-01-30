@@ -21,9 +21,17 @@ class Select_Gem():
     def selected_gem1(self):
         return self._selected_gem1
     
+    @selected_gem1.setter
+    def selected_gem1(self, value):
+        self._selected_gem1 = value
+    
     @property
     def selected_gem2(self):
         return self._selected_gem2
+    
+    @selected_gem2.setter
+    def selected_gem2(self, value):
+        self._selected_gem2 = value
     
     @property
     def ready_to_swap(self) -> bool:

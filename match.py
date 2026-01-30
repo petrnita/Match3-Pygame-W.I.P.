@@ -1,5 +1,5 @@
 from pygame.math import Vector2 as vec
-from consts import GAME, KILL_GEM
+from consts import IDS, GAME, KILL_GEM
 from sprites import Animation
 
 class Match():
@@ -42,9 +42,9 @@ class Match():
                     kinds.extend([negative, center, positive])
         return kinds
     
-    def match(self) -> bool:
+    def match(self) -> list[bool, set]:
         from game_assets import Gem
-        ret = False
+        ret = [False, set()]
         set_match = reversed(sorted(self._set_matching, key=lambda gem: gem.bpos.pos.y))
         self._set_matching = set()
         new_gems = {'0': -1, '1': -1, '2': -1, '3': -1, '4': -1, '5': -1, '6': -1, '7': -1}
@@ -57,6 +57,7 @@ class Match():
                 lst_new_gems = list()
                 for same in set_same:
                     new_y = new_gems[str(int(same.bpos.pos.x))]
+                    IDS.append(same.id)
                     new_gem = self._board_manager.board.add_new_gem(vec(same.bpos.pos.x, new_y))
                     lst_new_gems.append(new_gem)
                     new_gems[str(int(same.bpos.pos.x))] -= 1
@@ -64,5 +65,6 @@ class Match():
                                 KILL_GEM.ANIM, KILL_GEM.SPEED, KILL_GEM.OFFSET, KILL_GEM.LOOP)
                     same.kill()
                     self._board_manager.board.gems[int(same.bpos.pos.x)][int(same.bpos.pos.y)] = None
-                ret = True
+                ret = [True, set_same]
+                #set_same = set()
         return ret

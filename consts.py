@@ -7,17 +7,23 @@ from graphic import ImageSheet
 pygame.init()
 pygame.mixer.init()
 
+IDS = list(range(64))
 
 class Slices():
     @classmethod
-    def get_positions(cls, filename: str) -> dict[vec]:
+    def get_positions(cls, filename: str) -> list[dict[vec], dict[Rect]]:
         with open(filename, 'r') as file:
             data = json.load(file)
         positions = {}
+        rects = {}
         for d in data['meta']['slices']:
             bounds = d['keys'][0]['bounds']
             positions[d['name']] = vec(bounds['x'], bounds['y'])
-        return positions
+            rects[d['name']] = Rect(bounds['x'],
+                                    bounds['y'],
+                                    bounds['w'],
+                                    bounds['h'])      
+        return [positions, rects]
     
     @classmethod
     def get_images(cls, filename: str, picture: str) -> list[dict[Surface], dict[Rect]]:
@@ -46,7 +52,7 @@ class Screen_Layout():
         self._HEIGHT: int = self.IMAGE.get_height()
         self._SIZE: tuple = (self._WIDTH, self._HEIGHT)
         self._slices: Slices = Slices()
-        self._POSITIONS: dict[vec] = self._slices.get_positions('json/screen_layout.json')
+        self._POSITIONS, self._POSITIONS_RECTS = self._slices.get_positions('json/screen_layout.json')
         self._ELEMENTS, self._ELEMENTS_RECTS = self._slices.get_images('json/elements.json', 'gfx/elements.png')
         self._TILE_SIZE: vec = vec(self._ELEMENTS_RECTS['gem_1'].w, self._ELEMENTS_RECTS['gem_1'].h)
 
@@ -71,6 +77,10 @@ class Screen_Layout():
         return self._POSITIONS
     
     @property
+    def POSITIONS_RECTS(self) -> dict[Rect]:
+        return self._POSITIONS_RECTS
+    
+    @property
     def ELEMENTS(self) -> dict[Surface]:
         return self._ELEMENTS
     
@@ -92,7 +102,7 @@ class Elements():
 class Colors():
     def __init__(self):
         self.TRANSPARENT = (0, 0, 0, 0)
-        self.SKIN_MEDIUM = '#806d5b'
+        self.SKIN_MEDIUM = "#28221a"
 
 
 class Game_Props():
@@ -107,6 +117,8 @@ class Txt_Props():
         self.PRESS_ANY_KEY = None
 
 SCREEN = Screen_Layout()
+
+MOUSE_OFFSET = vec(SCREEN.ELEMENTS_RECTS['hand_cursor'].w//2, SCREEN.ELEMENTS_RECTS['hand_cursor'].h//2)
 
 COLORS = Colors()
 
@@ -130,7 +142,7 @@ SELECT.LOOP = True
 
 KILL_GEM = Elements()
 KILL_GEM.SIZE = vec(SCREEN.ELEMENTS_RECTS['gem_1'].w, SCREEN.ELEMENTS_RECTS['gem_1'].h)
-KILL_GEM.OFFSET = GEMS.OFFSET
+KILL_GEM.OFFSET = vec()
 KILL_GEM.ANIM = ImageSheet('kill_gem_', SCREEN.ELEMENTS)
 KILL_GEM.SPEED = 32
 KILL_GEM.LOOP = False

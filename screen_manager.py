@@ -8,6 +8,7 @@ class Screen_Layers():
         self.Main: Surface
         self.Board: Surface
         self.Anim: Surface
+        self.Anim2: Surface
         self.Top: Surface
 
 
@@ -29,7 +30,9 @@ class Screen_Manager():
     def draw(self):
         self.screens.Main.blit(self.screens.Board, SCREEN.POSITIONS['board'])
         self.screens.Main.blit(self.screens.Anim, SCREEN.POSITIONS['board'])
-        self.screens.Top.blit(SCREEN.ELEMENTS['title'], SCREEN.POSITIONS['title'])
+        self.screens.Main.blit(SCREEN.ELEMENTS['title'], SCREEN.POSITIONS['title'])
         self.screens.Main.blit(self.screens.Top, (0, 0))
 
         pygame.display.flip()
+
+

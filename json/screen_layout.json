@@ -18,9 +18,12 @@
   ],
   "layers": [
    { "name": "Layer", "opacity": 255, "blendMode": "normal" },
-   { "name": "Layer 5", "opacity": 255, "blendMode": "normal" }
+   { "name": "Layer 5", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 6", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
+   { "name": "title_anim_right", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1456, "y": 16, "w": 112, "h": 112 } }] },
+   { "name": "title_anim_left", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 160, "y": 16, "w": 112, "h": 112 } }] },
    { "name": "dirs_offset", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 432, "y": 96, "w": 192, "h": 192 } }] },
    { "name": "select_offset", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 464, "y": 128, "w": 128, "h": 128 } }] },
    { "name": "tile", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 480, "y": 144, "w": 96, "h": 96 } }] },
@@ -39,7 +42,7 @@
    { "name": "cpu_bar_4", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1328, "y": 576, "w": 320, "h": 96 } }] },
    { "name": "cpu_bar_5", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1328, "y": 672, "w": 320, "h": 96 } }] },
    { "name": "cpu_bar_6", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1328, "y": 768, "w": 320, "h": 96 } }] },
-   { "name": "time_bar", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 464, "y": 928, "w": 800, "h": 64 } }] },
+   { "name": "time_bar_progress", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 464, "y": 926, "w": 800, "h": 64 } }] },
    { "name": "board", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 480, "y": 48, "w": 768, "h": 864 } }] },
    { "name": "no_move", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 576, "y": 480, "w": 576, "h": 96 } }] }
   ]
