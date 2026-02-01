@@ -1,5 +1,3 @@
-import pygame
-from pygame import Rect
 from pygame.math import Vector2 as vec
 from consts import SCREEN
 

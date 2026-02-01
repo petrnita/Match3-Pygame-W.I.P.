@@ -1,6 +1,5 @@
 from pygame.math import Vector2 as vec
 from game_assets import Gem
-import time
 import numpy as np
 
 '''
@@ -90,9 +89,9 @@ class Check_Matching():
                     ids = [x[1] for x in lst]
                     if len(numbers) == len([item for row in mask for item in row]):
                         if len(set(numbers)) == 2:
-                            print(time.time())
-                            print(f'{np.transpose(np.array(numbers).reshape([len(mask), len(mask[0])]), (1, 0))} > [{row=} {column=}]')
-                            print(f'{np.transpose(np.array(ids).reshape([len(mask), len(mask[0])]), (1, 0))}')
+                            # print(time.time())
+                            # print(f'{np.transpose(np.array(numbers).reshape([len(mask), len(mask[0])]), (1, 0))} > [{row=} {column=}]')
+                            # print(f'{np.transpose(np.array(ids).reshape([len(mask), len(mask[0])]), (1, 0))}')
                             find_gem = np.where(np.array(mask, dtype=int)==2)
                             direction = np.where(np.array(mask, dtype=int)==-1)
                             return (board[row+find_gem[0][0]][column+find_gem[1][0]],

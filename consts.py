@@ -1,4 +1,4 @@
-import pygame, sys, json
+import pygame, json
 from pygame import Surface, Rect
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
@@ -116,6 +116,9 @@ class Txt_Props():
         self.NO_MORE_MOVES = None
         self.PRESS_ANY_KEY = None
 
+GEMS_KILLED_EVENT = pygame.USEREVENT + 1
+BOARD_IS_IDLE = pygame.USEREVENT + 2
+
 SCREEN = Screen_Layout()
 
 MOUSE_OFFSET = vec(SCREEN.ELEMENTS_RECTS['hand_cursor'].w//2, SCREEN.ELEMENTS_RECTS['hand_cursor'].h//2)
@@ -126,7 +129,7 @@ SND_SWAP_BACK = Sound('snd/swap_back.wav')
 
 GAME = Game_Props()
 GAME.BOARD_SIZE = vec(8, 8)
-GAME.NUMBER_OF_GEMS = 9
+GAME.NUMBER_OF_GEMS = 6
 
 GEMS = Elements()
 GEMS.SIZE = SCREEN.TILE_SIZE
