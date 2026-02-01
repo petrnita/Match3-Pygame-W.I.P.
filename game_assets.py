@@ -1,19 +1,12 @@
-from consts import GEMS_KILLED_EVENT, \
-                    KILL_GEM, \
-                    BOARD_IS_IDLE_EVENT, \
-                    IDS, \
-                    MOUSE_OFFSET, \
-                    SCREEN, \
-                    SND_SWAP_BACK, \
-                    GAME, \
-                    SWAP_DIRS
 import pygame
 from pygame.sprite import Group, GroupSingle
 from pygame.math import Vector2 as vec
 from random import choice
 from gem_select import Select_Gem
-from sprites import Gem, Animation, Swap_Dirs
-from graphic import ImageSheet
+from sprites import ImageSheet, \
+                    Gem, \
+                    Animation, \
+                    Swap_Dirs
 import numpy as np
 
 
@@ -56,7 +49,7 @@ class Board_Creator:
                     gems_sheet: ImageSheet,
                     pos: vec,
                     number: int = None):
-        
+        from consts import GAME
         candidates = number if number else choice([nr+1 for nr in range(GAME.NUMBER_OF_GEMS)])
         return Gem(gems_group, gems_sheet, pos, candidates)
     
@@ -106,6 +99,7 @@ class Board_Creator:
     
 class Board_Manager():
     def __init__(self):
+        from consts import GAME, SCREEN
         self._gems_group: Group[Gem] = Group()
         self._select_group: GroupSingle = GroupSingle()
         self._swapdir_group: GroupSingle = GroupSingle()
@@ -179,6 +173,7 @@ class Board_Manager():
         self.rearange_board(self._board)
 
     def rearange_board(self, new_board: list[Gem]):
+        from consts import GAME
         for x in range(int(GAME.BOARD_SIZE.x)):
             for y in range(int(GAME.BOARD_SIZE.y)):
                 self._board[x][y] = new_board[x][y]
@@ -189,7 +184,7 @@ class Board_Manager():
         return self._swaping
 
     def _detect_pointer_with_gem_collision(self, events, game):
-
+        from consts import SCREEN, MOUSE_OFFSET, SWAP_DIRS
         if not self.gems_end_moving(self._board): return
 
         gem: Gem = None
@@ -235,6 +230,7 @@ class Board_Manager():
         return True
 
     def update(self, events, dt, game):
+        from consts import BOARD_IS_IDLE_EVENT, SND_SWAP_BACK
         self._detect_pointer_with_gem_collision(events, game)
 
         if self._select_gem.ready_to_swap:
@@ -274,7 +270,8 @@ class Board_Manager():
         self._swaping_gem1 = gem1
         self._swaping_gem2 = gem2
 
-    def swap(self, sound: str=None): 
+    def swap(self, sound: str=None):
+        from consts import SND_SWAP_BACK
         self._swaping = not self._swaping
         if sound != None:
             SND_SWAP_BACK.play()
@@ -303,6 +300,7 @@ class Board_Manager():
         return self._matching_queue
         
     def _get_neighbor(self, gem, offset: vec):
+        from consts import GAME
         from game_assets import Gem
         _gem: Gem = gem
         bound = GAME.BOARD_SIZE
@@ -324,6 +322,7 @@ class Board_Manager():
         return kinds
     
     def check_match(self) -> list[bool, set]:
+        from consts import IDS, GEMS_KILLED_EVENT, SCREEN, KILL_GEM
         from game_assets import Gem, Board_Creator
         self._match = False
         self._gems_killed = set()

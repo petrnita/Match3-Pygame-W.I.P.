@@ -2,7 +2,7 @@ import pygame, json
 from pygame import Surface, Rect
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
-from graphic import ImageSheet
+from sprites import ImageSheet
 
 pygame.init()
 pygame.mixer.init()
@@ -91,6 +91,7 @@ class Screen_Layout():
 
 class Elements():
     def __init__(self):
+        from sprites import ImageSheet
         self.IMAGE: Surface = None
         self.SIZE: vec = None
         self.ANIM: ImageSheet = None
@@ -129,7 +130,7 @@ SND_SWAP_BACK = Sound('snd/swap_back.wav')
 
 GAME = Game_Props()
 GAME.BOARD_SIZE = vec(8, 8)
-GAME.NUMBER_OF_GEMS = 6
+GAME.NUMBER_OF_GEMS = 9
 
 GEMS = Elements()
 GEMS.SIZE = SCREEN.TILE_SIZE

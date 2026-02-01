@@ -1,18 +1,12 @@
-from consts import IDS, \
-                    COLORS, \
-                    SCREEN, \
-                    GAME, \
-                    GEMS
 import pygame
 from pygame import Rect, Surface
 from pygame.sprite import Group, GroupSingle, Sprite
 from pygame.math import Vector2 as vec
 import numpy as np
-from graphic import ImageSheet
 
 from pygame.font import SysFont
 
-pygame.font.init
+pygame.font.init()
 debugfont = SysFont('Arial', 16, True)
 
 class Debug_Rect(Sprite):
@@ -68,6 +62,24 @@ class BoardPosition():
     @property
     def offset(self) -> vec:
         return self._offset
+
+
+class ImageSheet():
+    def __init__(self, name: str, images: dict[Surface]):
+        self._images: dict[Surface] = images
+        self._sheet = []
+        for key, image in self._images.items():
+            if name in key:
+                self.sheet.append(image)
+        self._frames: int = len(self._sheet)
+
+    @property
+    def frames(self) -> int:
+        return self._frames
+    
+    @property
+    def sheet(self) -> list[Surface]:
+        return self._sheet
     
 
 class Gem(Sprite):
@@ -75,6 +87,8 @@ class Gem(Sprite):
                  gems_img: ImageSheet,
                  pos: vec,
                  number: int):
+        from consts import IDS, \
+                            GEMS
         super().__init__(group)
 
         self.id = np.random.choice(IDS)
@@ -137,12 +151,14 @@ class Gem(Sprite):
         self._velocity = self._direction * self._speed
 
     def reset_state(self):
+        from consts import COLORS
         self._frame = 0
         self._state = 'idle'
         self.image.fill(COLORS.TRANSPARENT)
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
 
     def _fall(self, board_manager):
+        from consts import GAME
         if self._is_falling: return
         if self._bpos.pos.y == GAME.BOARD_SIZE.y-1: return
 
@@ -236,6 +252,7 @@ class Swap_Dirs(Sprite):
 
 class Bar(Sprite):
     def __init__(self, group: Group, img_sheet: dict[Surface], bar_type: str, player: str, bar_color: str=''):
+        from consts import SCREEN
         super().__init__(group)
         
         self._image_sheet: dict[Surface] = img_sheet
@@ -285,6 +302,7 @@ class Bar(Sprite):
 
 class Player_Text(Sprite):
     def __init__(self, group: Group, pos: vec, player: str):
+        from consts import SCREEN
         super().__init__(group)
         self._pos: vec = pos
         self._player: str = player
@@ -364,6 +382,7 @@ class Text_Fade(Sprite):#
 
 class Fade(Sprite):
     def __init__(self, group: Group, speed: int, direction: str='In'):
+        from consts import SCREEN, COLORS, GEMS
         super().__init__(group)
         if direction == 'In':
             self._direction = speed
