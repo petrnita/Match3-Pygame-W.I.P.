@@ -1,12 +1,190 @@
+from consts import IDS, \
+                    COLORS, \
+                    SCREEN, \
+                    GAME, \
+                    GEMS
 import pygame
 from pygame import Rect, Surface
 from pygame.sprite import Group, GroupSingle, Sprite
 from pygame.math import Vector2 as vec
 import numpy as np
-from consts import COLORS, SCREEN, GEMS
-from resources import BoardPosition
 from graphic import ImageSheet
+
+from pygame.font import SysFont
+
+pygame.font.init
+debugfont = SysFont('Arial', 16, True)
+
+class Debug_Rect(Sprite):
+    font = pygame.font.SysFont('Arial', 14, True)
+    def __init__(self, group: Group, id: int,  pos: tuple, new_pos: vec, velocity: vec):
+        super().__init__(group)
+
+        self.update(id, pos, new_pos, '#aa2200', velocity)
+
+    def update(self, id: int, pos: tuple, new_pos: vec, color: str, velocity: float):
+        self.image = Surface((96, 96), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        pygame.draw.rect(self.image, color, self.rect, 2)
+        gem_info1 = __class__.font.render(f'{id}', True, '#ffe8e2')
+        gem_info2 = __class__.font.render(f'{list(new_pos)}', True, '#ffe8e2')
+        gem_info3 = __class__.font.render(f'{list(pos)}', True, '#ffe8e2')
+        gem_info4 = __class__.font.render(f'{list(velocity)}', True, '#ffe8e2')
+        self.image.blit(gem_info1, (2, 2))
+        self.image.blit(gem_info2, (2, 18))
+        self.image.blit(gem_info3, (2, 34))
+        self.image.blit(gem_info4, (2, 50))
+        self.rect.topleft = pos    
+
+
+class BoardPosition():
+    def __init__(self, pos: vec, tile_size: vec, offset: vec=vec()):
+        self._pos: vec = pos
+        self._tile_size: vec = tile_size
+        self._offset: vec = offset
+        self._gfx_pos: vec = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
+
+    @property
+    def pos(self) -> vec:
+        return self._pos
     
+    @pos.setter
+    def pos(self, value: vec):
+        self._pos = value
+        self._gfx_pos = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
+
+    @property
+    def tile_size(self) -> int:
+        return self._tile_size
+    
+    @tile_size.setter
+    def tile_size(self, value):
+        self._tile_size = value
+
+    @property
+    def gfx_pos(self) -> vec:
+        return vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
+    
+    @property
+    def offset(self) -> vec:
+        return self._offset
+    
+
+class Gem(Sprite):
+    def __init__(self, group: Group,
+                 gems_img: ImageSheet,
+                 pos: vec,
+                 number: int):
+        super().__init__(group)
+
+        self.id = np.random.choice(IDS)
+        IDS.remove(self.id)
+        self._gems_img: ImageSheet = gems_img
+        self._size: vec = GEMS.SIZE
+        self._offset: vec = GEMS.OFFSET
+        self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
+        self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
+        self._number: int = number
+        self._speed: int = GEMS.SPEED
+        self._direction: vec = vec()
+        self._velocity: vec = self._direction * self._speed
+        self._ready = True
+        self._dist: int = 0
+        self._is_falling: bool = False
+        self._state: str = 'idle'
+        self._frame: int = 0
+        self.image: Surface = Surface((GEMS.SIZE.x, GEMS.SIZE.y), pygame.SRCALPHA)
+        self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
+        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
+        self.image.blit(idtext, (3, 3))
+        self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
+
+        #self.debug_rect = Debug_Rect(self._board_manager.swapdir_group, self.id, self.rect.topleft, self._new_bpos.gfx_pos, self._velocity)
+
+    @property
+    def bpos(self) -> BoardPosition:
+        return self._bpos
+    
+    @property
+    def new_bpos(self) -> BoardPosition:
+        return self._new_bpos
+    
+    @new_bpos.setter
+    def new_bpos(self, value: vec):
+        self._new_bpos.pos = value
+    
+    @property
+    def number(self) -> int:
+        return self._number
+    
+    @property
+    def state(self) -> str:
+        return self._state
+    
+    @state.setter
+    def state(self, value: str):
+        self._state = value
+    
+    @property
+    def ready(self) -> bool:
+        return self._ready
+
+    def change_pos(self):
+        self._ready = False
+        direction: vec = self._new_bpos.pos - self._bpos.pos
+        if vec(direction).length() > 0:
+            self._direction = vec.normalize(direction)
+        self._velocity = self._direction * self._speed
+
+    def reset_state(self):
+        self._frame = 0
+        self._state = 'idle'
+        self.image.fill(COLORS.TRANSPARENT)
+        self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
+
+    def _fall(self, board_manager):
+        if self._is_falling: return
+        if self._bpos.pos.y == GAME.BOARD_SIZE.y-1: return
+
+        dist = 0
+        if self._bpos.pos.y >= 0: start = int(self._bpos.pos.y) + 1
+        else: start = 0
+
+        for y in range(start, int(GAME.BOARD_SIZE.y)):
+            if board_manager.board[int(self._bpos.pos.x)][y] == None:
+                dist += 1
+        if dist == 0: return
+        self._new_bpos.pos = self._bpos.pos + vec(0, dist)
+        board_manager.add_to_matching(self)
+        self._is_falling = True
+        self.change_pos()
+        self._state = 'fall'
+    
+    def __repr__(self):
+        return f'{self._number} <{self.id}>'
+    
+    def update(self, board_manager, dt):
+        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
+        self.image.blit(idtext, (3, 3))
+
+        self._dt = dt
+
+        self._fall(board_manager)
+
+        current_pos = vec(self.rect.topleft)
+        distance = vec().distance_to(self._velocity*dt)
+        current_pos.move_towards_ip(self._new_bpos.gfx_pos, distance)
+        self.rect.topleft = current_pos
+
+        if not self._ready:
+            if self.rect.topleft == (int(self._new_bpos.gfx_pos.x), int(self._new_bpos.gfx_pos.y)):
+                self._velocity = vec()
+                self._bpos.pos = self._new_bpos.pos.copy()
+                board_manager.set_gem_on_position(self, self._bpos.pos)
+                self._ready  = True
+                self._is_falling = False
+                self.reset_state()
+
 
 class Animation(Sprite):
     def __init__(self, group: Group | GroupSingle,
@@ -208,25 +386,3 @@ class Fade(Sprite):
             return
         
         if self._direction < 0: self.kill()
-
-
-class Debug_Rect(Sprite):
-    font = pygame.font.SysFont('Arial', 14, True)
-    def __init__(self, group: Group, id: int,  pos: tuple, new_pos: vec, velocity: vec):
-        super().__init__(group)
-
-        self.update(id, pos, new_pos, '#aa2200', velocity)
-
-    def update(self, id: int, pos: tuple, new_pos: vec, color: str, velocity: float):
-        self.image = Surface((96, 96), pygame.SRCALPHA)
-        self.rect = self.image.get_rect()
-        pygame.draw.rect(self.image, color, self.rect, 2)
-        gem_info1 = __class__.font.render(f'{id}', True, '#ffe8e2')
-        gem_info2 = __class__.font.render(f'{list(new_pos)}', True, '#ffe8e2')
-        gem_info3 = __class__.font.render(f'{list(pos)}', True, '#ffe8e2')
-        gem_info4 = __class__.font.render(f'{list(velocity)}', True, '#ffe8e2')
-        self.image.blit(gem_info1, (2, 2))
-        self.image.blit(gem_info2, (2, 18))
-        self.image.blit(gem_info3, (2, 34))
-        self.image.blit(gem_info4, (2, 50))
-        self.rect.topleft = pos    

@@ -1,152 +1,33 @@
-from consts import BOARD_IS_IDLE, IDS, MOUSE_OFFSET, COLORS, SCREEN, SND_SWAP_BACK, GEMS, GAME, SWAP_DIRS
+from consts import GEMS_KILLED_EVENT, \
+                    KILL_GEM, \
+                    BOARD_IS_IDLE_EVENT, \
+                    IDS, \
+                    MOUSE_OFFSET, \
+                    SCREEN, \
+                    SND_SWAP_BACK, \
+                    GAME, \
+                    SWAP_DIRS
 import pygame
-from pygame import Rect, Surface
-from pygame.sprite import Sprite, Group, GroupSingle
+from pygame.sprite import Group, GroupSingle
 from pygame.math import Vector2 as vec
 from random import choice
-from screen_manager import Screen_Manager
 from gem_select import Select_Gem
-from old_files.swap_gem import Swap_Gem
-from match import Match
-from sprites import Swap_Dirs, Debug_Rect
+from sprites import Gem, Animation, Swap_Dirs
 from graphic import ImageSheet
-from resources import BoardPosition
 import numpy as np
 
-from pygame.font import SysFont
-
-pygame.font.init
-debugfont = SysFont('Arial', 16, True)
-
-class Gem(Sprite):
-    def __init__(self, group: Group,
-                 gems_img: ImageSheet,
-                 board_manager,
-                 pos: vec,
-                 number: int):
-        super().__init__(group)
-
-        self.id = choice(IDS)
-        IDS.remove(self.id)
-        self._gems_img: ImageSheet = gems_img
-        self._board_manager: Board_Manager = board_manager
-        self._size: vec = GEMS.SIZE
-        self._offset: vec = GEMS.OFFSET
-        self._bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
-        self._new_bpos: BoardPosition = BoardPosition(pos, self._size, self._offset)
-        self._number: int = number
-        self._speed: int = GEMS.SPEED
-        self._direction: vec = vec()
-        self._velocity: vec = self._direction * self._speed
-        self._ready = True
-        self._dist: int = 0
-        self._is_falling: bool = False
-        self._state: str = 'idle'
-        self._frame: int = 0
-        self.image: Surface = Surface((GEMS.SIZE.x, GEMS.SIZE.y), pygame.SRCALPHA)
-        self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
-        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
-        self.image.blit(idtext, (3, 3))
-        self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
-
-        #self.debug_rect = Debug_Rect(self._board_manager.swapdir_group, self.id, self.rect.topleft, self._new_bpos.gfx_pos, self._velocity)
-
-    @property
-    def bpos(self) -> BoardPosition:
-        return self._bpos
-    
-    @property
-    def new_bpos(self) -> BoardPosition:
-        return self._new_bpos
-    
-    @new_bpos.setter
-    def new_bpos(self, value: vec):
-        self._new_bpos.pos = value
-    
-    @property
-    def number(self) -> int:
-        return self._number
-    
-    @property
-    def state(self) -> str:
-        return self._state
-    
-    @state.setter
-    def state(self, value: str):
-        self._state = value
-    
-    @property
-    def ready(self) -> bool:
-        return self._ready
-
-    def change_pos(self):
-        self._ready = False
-        direction: vec = self._new_bpos.pos - self._bpos.pos
-        if vec(direction).length() > 0:
-            self._direction = vec.normalize(direction)
-        self._velocity = self._direction * self._speed
-
-    def reset_state(self):
-        self._frame = 0
-        self._state = 'idle'
-        self.image.fill(COLORS.TRANSPARENT)
-        self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
-
-    def _fall(self):
-        if self._is_falling: return
-        if self._bpos.pos.y == GAME.BOARD_SIZE.y-1: return
-
-        dist = 0
-        if self._bpos.pos.y >= 0: start = int(self._bpos.pos.y) + 1
-        else: start = 0
-
-        for y in range(start, int(GAME.BOARD_SIZE.y)):
-            if self._board_manager.board[int(self._bpos.pos.x)][y] == None:
-                dist += 1
-        if dist == 0: return
-        self._new_bpos.pos = self._bpos.pos + vec(0, dist)
-        self._board_manager.match_gems.add_to_matching(self)
-        self._is_falling = True
-        self.change_pos()
-        self._state = 'fall'
-    
-    def __repr__(self):
-        return f'{self._number} <{self.id}>'
-    
-    def update(self, dt):
-        idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
-        self.image.blit(idtext, (3, 3))
-
-        self._dt = dt
-
-        self._fall()
-
-        current_pos = vec(self.rect.topleft)
-        distance = vec().distance_to(self._velocity*dt)
-        current_pos.move_towards_ip(self._new_bpos.gfx_pos, distance)
-        self.rect.topleft = current_pos
-
-        if not self._ready:
-            if self.rect.topleft == (int(self._new_bpos.gfx_pos.x), int(self._new_bpos.gfx_pos.y)):
-                self._velocity = vec()
-                self._bpos.pos = self._new_bpos.pos.copy()
-                self._board_manager.set_gem_on_position(self, self._bpos.pos)
-                self._ready  = True
-                self._is_falling = False
-                self.reset_state()
 
 class Board_Creator:
     def make_board(gems_group: Group,
                    board_size: vec,
                    nr_of_gems: int,
-                   gems_sheet: ImageSheet,
-                   board_manager) -> list[Gem]:
+                   gems_sheet: ImageSheet) -> list[Gem]:
         gems = np.empty(shape=(int(board_size.x), int(board_size.y)), dtype=object)
 
         for x in range(int(board_size.y)):
             for y in range(int(board_size.x)):
                 number = choice(Board_Creator.choice_number(gems, vec(x, y), [nr+1 for nr in range(nr_of_gems)]))      
-                gems[x][y] = Gem(gems_group, gems_sheet, board_manager, vec(x, y), number)
+                gems[x][y] = __class__.add_new_gem(gems_group, gems_sheet, vec(x, y), number)
         #print(gems)
         
         return gems.tolist()
@@ -170,12 +51,14 @@ class Board_Creator:
 
         return candidates
     
+    @staticmethod
     def add_new_gem(gems_group: Group,
-                    pos: vec,
                     gems_sheet: ImageSheet,
-                    board_manager):
-        candidates = [nr+1 for nr in range(GAME.NUMBER_OF_GEMS)]
-        return Gem(gems_group, gems_sheet, board_manager, pos, choice(candidates))
+                    pos: vec,
+                    number: int = None):
+        
+        candidates = number if number else choice([nr+1 for nr in range(GAME.NUMBER_OF_GEMS)])
+        return Gem(gems_group, gems_sheet, pos, candidates)
     
     def exec_time(func):
         import time
@@ -221,36 +104,32 @@ class Board_Creator:
         return temp_board
 
     
-
 class Board_Manager():
-    def __init__(self, screen_manager: Screen_Manager):
+    def __init__(self):
         self._gems_group: Group[Gem] = Group()
-        self._screen_manager: Screen_Manager = screen_manager
-        self._anim_group: Group = Group()
+        self._select_group: GroupSingle = GroupSingle()
+        self._swapdir_group: GroupSingle = GroupSingle()
+        self._pointer_group: GroupSingle = GroupSingle()
+        self._anim_group: Group = Group()               
         self._board: list[Gem] = Board_Creator.make_board(self._gems_group,
                                                         GAME.BOARD_SIZE,
                                                         GAME.NUMBER_OF_GEMS,
-                                                        ImageSheet('gem_', SCREEN.ELEMENTS),
-                                                        self)
-        self._select_gem: Select_Gem = Select_Gem(self._screen_manager)
-        self._swapdir_group: GroupSingle = GroupSingle()
-        self._pointer_group: GroupSingle = GroupSingle()
+                                                        ImageSheet('gem_', SCREEN.ELEMENTS))
+        self._select_gem: Select_Gem = Select_Gem(self._select_group)
+        self._selected_gem1: Gem = None
+        self._selected_gem2: Gem = None
         self._swaping_gem1: Gem = None
         self._swaping_gem2: Gem = None
         self._swaping: bool = False
-        self._match_gems: Match = Match(self)
         self._gem_under_mouse: list[Gem] = list()
+        self._matching_queue: set = set()
         self._match: bool = False
-        self._ready_to_falling: bool = False
         self._gems_killed: set = None
+        self._ready_to_falling: bool = False
 
     @property
     def gems_group(self) -> Group:
         return self._gems_group
-
-    @property
-    def screen_manager(self):
-        return self._screen_manager
 
     @property
     def board(self) -> list[Gem]:
@@ -261,8 +140,12 @@ class Board_Manager():
         self._board = value
     
     @property
-    def select_gem(self) -> Select_Gem:
-        return self._select_gem
+    def selected_gem1(self) -> Gem:
+        return self._selected_gem1
+    
+    @selected_gem1.setter
+    def selected_gem1(self, value: Gem):
+        self._selected_gem1 = value
 
     @property
     def swapdir_group(self) -> GroupSingle:
@@ -273,17 +156,9 @@ class Board_Manager():
         return self._anim_group
     
     @property
-    def match_gems(self) -> Match:
-        return self._match_gems
-    
-    @property
     def match(self) -> bool:
         return self._match
     
-    @match.setter
-    def match(self, value: bool):
-        self._match = value
-
     @match.setter
     def match(self, value: bool):
         self._match = value
@@ -313,7 +188,7 @@ class Board_Manager():
     def get_swaping(self) -> bool:
         return self._swaping
 
-    def _detect_pointer_with_gem_collision(self, events, game_status, player):
+    def _detect_pointer_with_gem_collision(self, events, game):
 
         if not self.gems_end_moving(self._board): return
 
@@ -322,27 +197,27 @@ class Board_Manager():
             if _gem.rect.collidepoint(*(pygame.mouse.get_pos() - SCREEN.POSITIONS['board'] - MOUSE_OFFSET)):
                 gem = _gem
 
-        if player == 'Player':
+        if game.current_player == 'Player':
             for event in events:
-                if game_status != 'play':
+                if game.game_status != 'play':
                     break
                 if not self.get_swaping():
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        if gem != None:
-                            self._select_gem.try_select(gem)
+                        if gem:
+                            self._selected_gem1, self._selected_gem2 = self._select_gem.try_select(gem)
                     if event.type == pygame.MOUSEBUTTONUP:
-                        if gem != None and self._select_gem.selected_gem1 != None and gem != self._select_gem.selected_gem1:
-                            self._select_gem.try_select(gem, False)
+                        if gem != None and self._selected_gem1 != None and gem != self._selected_gem1:
+                            self._selected_gem1, self._selected_gem2 = self._select_gem.try_select(gem, False)
                     if event.type == pygame.MOUSEMOTION:
                         if self._gem_under_mouse != gem:
                             self.swapdir_group.empty()
                             self._gem_under_mouse = gem
-                        if self._select_gem.selected_gem1 and self._select_gem.is_neighbor(gem):
+                        if self._selected_gem1 and self._select_gem.is_neighbor(gem):
                             Swap_Dirs(self._swapdir_group,
-                                        self._select_gem.selected_gem1.bpos,
+                                        self._selected_gem1.bpos,
                                         SWAP_DIRS.ANIM,
                                         SWAP_DIRS.OFFSET,
-                                        vec(gem.bpos.pos - self._select_gem.selected_gem1.bpos.pos))
+                                        vec(gem.bpos.pos - self._selected_gem1.bpos.pos))
     
     def gems_end_moving(self, gems: set[Gem] | list[Gem]) -> bool:
         if len(gems) == 0: return False
@@ -359,24 +234,19 @@ class Board_Manager():
         if not self.gems_end_moving(self._board): return False
         return True
 
-    def update(self, events, dt, game_status, player):
-
-        self._detect_pointer_with_gem_collision(events, game_status, player)
-
-        self._select_gem.select_group.update(dt)
-        self._select_gem.select_group.draw(self._screen_manager.Anim)
-        self._swapdir_group.draw(self._screen_manager.Anim)
+    def update(self, events, dt, game):
+        self._detect_pointer_with_gem_collision(events, game)
 
         if self._select_gem.ready_to_swap:
             self._select_gem.ready_to_swap = False
-            self.add_gems(self._select_gem.selected_gem1, self._select_gem.selected_gem2)
+            self.add_gems(self._selected_gem1, self._selected_gem2)
             self.swap(None)
 
         if self.get_swaping():
             if self.gems_end_moving([self._swaping_gem1, self._swaping_gem2]):
-                self._match_gems.add_to_matching(self._swaping_gem1)
-                self._match_gems.add_to_matching(self._swaping_gem2)
-                self._match_gems.match(self)
+                self.add_to_matching(self._swaping_gem1)
+                self.add_to_matching(self._swaping_gem2)
+                self.check_match()
                 #self._match, self._gems_killed = self._match_gems.match()
                 if self._match:
                     self._swaping = False
@@ -386,16 +256,19 @@ class Board_Manager():
                 self._select_gem.clear()
 
         if self.board_is_ready():
-            if len(self._match_gems.set_matching) > 0:
-                self._match_gems.match(self)
-                #self._match, self._gems_killed = self._match_gems.match()
+            if len(self._matching_queue) > 0:
+                self.check_match()
             else:
-                pygame.event.post(pygame.event.Event(BOARD_IS_IDLE))
+                pygame.event.post(pygame.event.Event(BOARD_IS_IDLE_EVENT))
 
-        self._gems_group.update(dt)
+        self._select_group.update(dt)
+        self._gems_group.update(self, dt)
         self._anim_group.update(dt)
-        self._gems_group.draw(self._screen_manager.Board)
-        self._anim_group.draw(self._screen_manager.Anim)
+
+        self._gems_group.draw(game.screen_manager.Board)
+        self._select_group.draw(game.screen_manager.Anim)
+        self._swapdir_group.draw(game.screen_manager.Anim)        
+        self._anim_group.draw(game.screen_manager.Anim)
 
     def add_gems(self, gem1, gem2):
         self._swaping_gem1 = gem1
@@ -420,6 +293,70 @@ class Board_Manager():
         self._swaping_gem1 = None
         self._swaping_gem2 = None
         self._swaping = False
+
+    def add_to_matching(self, gem):
+        from game_assets import Gem
+        _gem: Gem = gem
+        self._matching_queue.add(_gem)
+
+    def get_matching_queue(self) -> set:
+        return self._matching_queue
+        
+    def _get_neighbor(self, gem, offset: vec):
+        from game_assets import Gem
+        _gem: Gem = gem
+        bound = GAME.BOARD_SIZE
+        if 0 <= _gem.bpos.pos.x + offset.x < bound.x and 0 <= _gem.bpos.pos.y + offset.y < bound.y:
+            return self._board[int(_gem.bpos.pos.x + offset.x)][int(_gem.bpos.pos.y + offset.y)]
+        return None
+    
+    def _three_of_kind(self, gem, axis: list) -> tuple:
+        from game_assets import Gem
+        _gem: Gem = gem
+        kinds: list = list()
+        for neighbor in axis:
+            negative: Gem = self._get_neighbor(_gem, neighbor + axis[0])
+            center: Gem = self._get_neighbor(_gem, neighbor)
+            positive: Gem = self._get_neighbor(_gem, neighbor + axis[2])
+            if not None in [negative, center, positive]:
+                if negative.number == center.number == positive.number:
+                    kinds.extend([negative, center, positive])
+        return kinds
+    
+    def check_match(self) -> list[bool, set]:
+        from game_assets import Gem, Board_Creator
+        self._match = False
+        self._gems_killed = set()
+        #ret = [False, set()]
+        _sorted_matching_queue = reversed(sorted(self._matching_queue, key=lambda gem: gem.bpos.pos.y))
+        self._matching_queue = set()
+        new_gems = {'0': -1, '1': -1, '2': -1, '3': -1, '4': -1, '5': -1, '6': -1, '7': -1}
+        self._horizontal: list[vec] = [vec(-1, 0), vec(), vec(1, 0)]
+        self._vertical: list[vec] = [vec(0, -1), vec(), vec(0, 1)]
+        for gem in _sorted_matching_queue:
+            #self._board_manager.possibles = False
+            set_same: set[Gem] = set()
+            set_same.update(self._three_of_kind(gem, self._horizontal))
+            set_same.update(self._three_of_kind(gem, self._vertical))
+            if len(set_same) > 2:
+                lst_new_gems = list()
+                for same in set_same:
+                    new_y = new_gems[str(int(same.bpos.pos.x))]
+                    IDS.append(same.id)
+                    new_gem = Board_Creator.add_new_gem(self._gems_group,
+                                                        ImageSheet('gem_', SCREEN.ELEMENTS),
+                                                        vec(same.bpos.pos.x, new_y))
+                    lst_new_gems.append(new_gem)
+                    new_gems[str(int(same.bpos.pos.x))] -= 1
+                    Animation(self._anim_group, same.bpos.gfx_pos,
+                                KILL_GEM.ANIM, KILL_GEM.SPEED, KILL_GEM.OFFSET, KILL_GEM.LOOP)
+                    same.kill()
+                    self._board[int(same.bpos.pos.x)][int(same.bpos.pos.y)] = None
+                pygame.event.post(pygame.event.Event(GEMS_KILLED_EVENT))
+                self._match = True
+                self._gems_killed = set_same
+                #ret = [True, set_same]
+                print(f'{set_same=}')
     
 
             

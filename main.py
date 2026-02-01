@@ -1,15 +1,52 @@
-from consts import GEMS_KILLED_EVENT, BOARD_IS_IDLE, SCREEN, SWAP_DIRS, TXT_NO_MOVE, SELECT
+from consts import GEMS_KILLED_EVENT, \
+                    BOARD_IS_IDLE_EVENT, \
+                    COLORS, \
+                    SCREEN, \
+                    SWAP_DIRS, \
+                    TXT_NO_MOVE, \
+                    SELECT
 import pygame, sys
+from pygame import Surface
 from pygame.sprite import Group, GroupSingle
 from pygame.math import Vector2 as vec
 from pygame.cursors import Cursor
-from screen_manager import Screen_Manager
 from game_assets import Board_Manager, Gem
 from check_matching import Check_Matching
-from sprites import Fade, Player_Text, Debug_Rect
+from sprites import Fade, Player_Text
 from sprites import Text_Fade, Swap_Dirs, Bar, Animation
 from debug import Show_Text
-import numpy as np
+
+
+class Screen_Manager():
+    def __init__(self):
+        self.Main = pygame.display.set_mode(SCREEN.SIZE)
+        pygame.display.set_caption('Match-3 game tutorial 2026 > Petr Nita <')
+        self.Board = Surface((SCREEN.ELEMENTS_RECTS['board'].w, SCREEN.ELEMENTS_RECTS['board'].h)).convert_alpha()
+        self.Anim = self.Board.copy().convert_alpha()
+        self.Top = self.Main.copy().convert_alpha()
+        self.debug_shuffle = False
+
+    def paint_screen(self):
+        self.Main.blit(SCREEN.IMAGE, (0, 0))
+        self.Board.fill(COLORS.TRANSPARENT)
+        self.Anim.fill(COLORS.TRANSPARENT)
+        self.Top.fill(COLORS.TRANSPARENT)
+        
+    def draw(self):
+        self.Main.blit(self.Board, SCREEN.POSITIONS['board'])
+        self.Main.blit(self.Anim, SCREEN.POSITIONS['board'])
+        self.Main.blit(SCREEN.ELEMENTS['title'], SCREEN.POSITIONS['title'])
+        self.Main.blit(self.Top, (0, 0))
+
+# debug
+        pygame.display.flip()
+        if self.debug_shuffle:
+            self.debug_shuffle = False
+            self.print_screen()
+
+    def print_screen(self):
+        image = self.Main.subsurface(SCREEN.POSITIONS_RECTS['board'])
+        pygame.image.save(image, 'gfx/screenshot.png')
 
 
 class Player():
@@ -107,7 +144,7 @@ class GameManager():
         self.clock = pygame.time.Clock()
         self.make_groups()
         self.screen_manager: Screen_Manager = Screen_Manager()
-        self.board_manager: Board_Manager = Board_Manager(self.screen_manager)
+        self.board_manager: Board_Manager = Board_Manager()
         self.game_status = 'start'
         self.current_player: str = 'Player'
         self.player: Player = Player()
@@ -142,7 +179,7 @@ class GameManager():
         self.time_bar = Bar(self.bars_group, SCREEN.ELEMENTS, 'time', 'time', 'progress')
 
     def update(self, events, dt):
-        self.board_manager.update(events, dt, self.game_status, self.current_player)
+        self.board_manager.update(events, dt, self)
         self.fade_group.update(dt)
         self.text_group.update(dt)
         self.anim_group.update(dt)
@@ -210,7 +247,7 @@ class GameManager():
                     self.ready_to_move = True
                 if event.type == GEMS_KILLED_EVENT:
                     self.gems_are_killed = True
-                if event.type == BOARD_IS_IDLE:
+                if event.type == BOARD_IS_IDLE_EVENT:
                     self.board_is_idle = True
                                        
             self.screen_manager.paint_screen()
@@ -276,7 +313,7 @@ class GameManager():
                 self.cpu.start_move = True
                 return
             
-            self.board_manager.select_gem.selected_gem1 = self.cpu.find_gem
+            self.board_manager.selected_gem1 = self.cpu.find_gem
             Animation(self.board_manager.select_gem.select_group, self.cpu.find_gem.bpos.gfx_pos,
                     SELECT.ANIM, SELECT.SPEED, SELECT.OFFSET, SELECT.LOOP)
             Swap_Dirs(self.board_manager.swapdir_group,

@@ -117,7 +117,7 @@ class Txt_Props():
         self.PRESS_ANY_KEY = None
 
 GEMS_KILLED_EVENT = pygame.USEREVENT + 1
-BOARD_IS_IDLE = pygame.USEREVENT + 2
+BOARD_IS_IDLE_EVENT = pygame.USEREVENT + 2
 
 SCREEN = Screen_Layout()
 
