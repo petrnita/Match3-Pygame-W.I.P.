@@ -4,5 +4,5 @@ console = Console()
 
 def log(message: str, headline: str='')
     if headline != '':
-        console.rule(headline)
+        console.rule(headline, align='left')
     console.log(message)
