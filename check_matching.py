@@ -2,6 +2,8 @@ from pygame.math import Vector2 as vec
 from game_assets import Gem
 import numpy as np
 
+from debug import debug
+
 '''
     The class checks whether there is at least one possible match on the game board.
         This check is performed using masks for 16 possible match combinations.

@@ -4,6 +4,10 @@ from pygame.sprite import Group, GroupSingle, Sprite
 from pygame.math import Vector2 as vec
 import numpy as np
 
+import logging
+logging.basicConfig(level=logging.DEBUG, filename='log.txt', filemode='w')
+logger = logging.getLogger(__name__)
+
 from pygame.font import SysFont
 
 pygame.font.init()
@@ -36,7 +40,7 @@ class BoardPosition():
         self._pos: vec = pos
         self._tile_size: vec = tile_size
         self._offset: vec = offset
-        self._gfx_pos: vec = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
+        self._gpos: vec = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
 
     @property
     def pos(self) -> vec:
@@ -45,7 +49,7 @@ class BoardPosition():
     @pos.setter
     def pos(self, value: vec):
         self._pos = value
-        self._gfx_pos = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
+        self._gpos = vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
 
     @property
     def tile_size(self) -> int:
@@ -56,7 +60,7 @@ class BoardPosition():
         self._tile_size = value
 
     @property
-    def gfx_pos(self) -> vec:
+    def gpos(self) -> vec:
         return vec(self._pos.elementwise()*self._tile_size.elementwise()) + self._offset
     
     @property
@@ -111,7 +115,7 @@ class Gem(Sprite):
         self.image.blit(self._gems_img.sheet[self._number-1], (0, 0))
         idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
         self.image.blit(idtext, (3, 3))
-        self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gfx_pos)
+        self.rect: Rect = self.image.get_rect(topleft = self._new_bpos.gpos)
 
         #self.debug_rect = Debug_Rect(self._board_manager.swapdir_group, self.id, self.rect.topleft, self._new_bpos.gfx_pos, self._velocity)
 
@@ -142,6 +146,46 @@ class Gem(Sprite):
     @property
     def ready(self) -> bool:
         return self._ready
+    
+    @property
+    def posx(self) -> int:
+        return int(self._bpos.pos.x)
+    
+    @property
+    def posy(self) -> int:
+        return int(self._bpos.pos.y)
+
+    @property
+    def gposx(self) -> float:
+        return self._bpos._gpos.x
+    
+    @property
+    def gposy(self) -> float:
+        return self._bpos._gpos.y
+    
+    @property
+    def pos(self) -> vec:
+        return self._bpos.pos
+    
+    @pos.setter
+    def pos(self, value: vec):
+        self._bpos.pos = value
+
+    @property
+    def gpos(self) -> vec:
+        return self._bpos._gpos
+
+    @property
+    def newpos(self) -> vec:
+        return self._new_bpos.pos
+    
+    @newpos.setter
+    def newpos(self, value: vec):
+        self._new_bpos.pos = value
+
+    @property
+    def newgpos(self) -> vec:
+        return self._new_bpos._gpos
 
     def change_pos(self):
         self._ready = False
@@ -177,7 +221,10 @@ class Gem(Sprite):
         self._state = 'fall'
     
     def __repr__(self):
-        return f'{self._number} <{self.id}>'
+        return f'({self._number})<{self.id:02}>'
+    
+    def __rich__(self) -> str:
+        return f'([bold cyan]{self._number}[/bold cyan])<[yellow]{self.id:02}[/yellow]>'
     
     def update(self, board_manager, dt):
         idtext = debugfont.render(f' {self.id} ', True, '#ffa4d1', "#141313")
@@ -189,11 +236,11 @@ class Gem(Sprite):
 
         current_pos = vec(self.rect.topleft)
         distance = vec().distance_to(self._velocity*dt)
-        current_pos.move_towards_ip(self._new_bpos.gfx_pos, distance)
+        current_pos.move_towards_ip(self._new_bpos.gpos, distance)
         self.rect.topleft = current_pos
 
         if not self._ready:
-            if self.rect.topleft == (int(self._new_bpos.gfx_pos.x), int(self._new_bpos.gfx_pos.y)):
+            if self.rect.topleft == (int(self._new_bpos.gpos.x), int(self._new_bpos.gpos.y)):
                 self._velocity = vec()
                 self._bpos.pos = self._new_bpos.pos.copy()
                 board_manager.set_gem_on_position(self, self._bpos.pos)
@@ -247,7 +294,7 @@ class Swap_Dirs(Sprite):
             '[-1, 0]': self._sheet_img[3]
         }
         self.image: Surface = self._dirs[str(self._direction)]
-        self.rect: Rect = self.image.get_rect(topleft=self._pos.gfx_pos+self._offset)
+        self.rect: Rect = self.image.get_rect(topleft=self._pos.gpos+self._offset)
 
 
 class Bar(Sprite):

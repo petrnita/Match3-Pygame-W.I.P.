@@ -6,9 +6,13 @@ from pygame.cursors import Cursor
 from game_assets import Board_Manager, Gem
 from check_matching import Check_Matching
 from sprites import Fade, Player_Text
-from sprites import Text_Fade, Swap_Dirs, Bar, Animation
+from sprites import Text_Fade, Swap_Dirs, Bar
 from debug import Show_Text
 
+from debug import log, clear
+from debug import debug
+
+clear()
 
 class Screen_Manager():
     def __init__(self):
@@ -55,7 +59,6 @@ class Player():
         self._start_move: bool = True
         self._end_move: bool = False
         self._bars: list[Bar] = []
-        self._make_bars()
         self._damage: int = 0
         self._extra_move: bool = False
 
@@ -131,13 +134,11 @@ class Player():
         self.text.swap_image()
         player.text.swap_image()
 
-    def _make_bars(self):
-        pass
-
 
 class GameManager():
     def __init__(self):
         from consts import SCREEN
+        import os
         self.clock = pygame.time.Clock()
         self.make_groups()
         self.screen_manager: Screen_Manager = Screen_Manager()
@@ -147,6 +148,7 @@ class GameManager():
         self.player: Player = Player()
         self.player.text = Player_Text(self.text_group, SCREEN.POSITIONS['player'], 'player')
         self.player.start_move = True
+        self.swaping = False
         self.cpu: Player = Player()
         self.cpu.text = Player_Text(self.text_group, SCREEN.POSITIONS['cpu'], 'cpu')
         self.cpu.text.swap_image()
@@ -183,33 +185,31 @@ class GameManager():
         self.anim_group.update(dt)
 
         if self.game_status == 'shuffle':
-            if self.board_manager.board_is_ready():
+            if self.board_manager.board_is_idle:
                 Fade(self.fade_group, 2, 'Out')
-                self.game_status = 'play'
-                self.bar_counter = 100
+                # self.game_status = 'play'
 
         self.bars_group.update(dt)
 
         self.debug_group.update(f'FPS: {int(self.clock.get_fps())}')
 
-        if self.game_status == 'start':
-            if self.ready_to_move == True:
-                self.game_status = 'play'
-                self.ready_to_move = False
-                self.wait(2000)
-                print('start')
+        # if self.game_status == 'start':
+        #     if self.ready_to_move == True:
+        #         self.wait(2000)
+        #         print('start')
 
-        if self.game_status == 'play':
-            if self.current_player == 'CPU':
-                self.cpu_playing()
-                if self.gems_are_killed:
-                    self.gems_are_killed = False
-                    self.take_damage(self.cpu, self.player)
-            else:
-                self.player_playing()
-                if self.gems_are_killed:
-                    self.gems_are_killed = False
-                    self.take_damage(self.player, self.cpu)
+        if self.game_status == 'play' or self.game_status == 'start' or self.game_status == 'shuffle':
+            if self.ready_to_move:
+                if self.current_player == 'CPU':
+                    self.cpu_playing()
+                    if self.gems_are_killed:
+                        self.gems_are_killed = False
+                        self.take_damage(self.cpu, self.player)
+                else:
+                    self.player_playing()
+                    if self.gems_are_killed:
+                        self.gems_are_killed = False
+                        self.take_damage(self.player, self.cpu)
 
     def draw(self):   
         self.fade_group.draw(self.screen_manager.Anim)
@@ -218,7 +218,7 @@ class GameManager():
         self.debug_group.draw(self.screen_manager.Main)
         
     def main_loop(self):
-        from consts import GEMS_KILLED_EVENT, BOARD_IS_IDLE_EVENT
+        from consts import GEMS_KILLED_EVENT, BOARD_IS_IDLE_EVENT, SWAPING_EVENT
         run: bool = True
         while run:
 
@@ -248,6 +248,8 @@ class GameManager():
                     self.gems_are_killed = True
                 if event.type == BOARD_IS_IDLE_EVENT:
                     self.board_is_idle = True
+                if event.type == SWAPING_EVENT:
+                    self.swaping = True
                                        
             self.screen_manager.paint_screen()
 
@@ -259,15 +261,15 @@ class GameManager():
             self.screen_manager.draw()
 
     def player_playing(self):
-        if not self.board_is_idle: return
-        if self.player.start_move: return
-
-        if self.player.swap:
-            self.player.swap = False
-            self.player.swap_image(self.cpu)
-            return
+        if not self.board_manager.board_is_idle: return
 
         if self.player.start_move:
+            if not self.game_status == 'start' and not self.game_status == 'shuffle':
+                self.player.swap_image(self.cpu)
+                log('player swaping image')
+            else:
+                log('play')
+                self.game_status = 'play'
             find_gem, _ = Check_Matching.check(self.board_manager.board)
             if not find_gem:
                 self.screen_manager.debug_shuffle = True
@@ -276,34 +278,81 @@ class GameManager():
                 self.wait(4000)
                 return
             self.player.start_move = False
-        else:
-            if self.board_manager.get_swaping():
-                #self.player.end_move = True
-                #return
 
-            #if self.player.end_move:
+        if not self.player.end_move:
+            if self.swaping:
+                log(f'{self.swaping=}')
+                self.swaping = False
+                self.player.end_move = True
+                self.wait(1000)
+                return
+        else:
+            log(f'{self.player.end_move=}') 
+            if self.player.extra_move:
+                log('player has extra move')
+                self.player.extra_move = False
+                self.player.start_move = True
                 self.player.end_move = False
-                if self.player.extra_move:
-                    self.player.start_move = True
-                    self.player.extra_move = False
-                    self.wait(2000)
-                    return            
-                self.current_player = 'CPU'
-                self.cpu.swap = True
                 self.wait(2000)
+                return 
+            
+            self.current_player = 'CPU'
+            log(f'{self.current_player=}', '[bold blue]CPU[/] is playing')
+            self.player.end_move = False
+
+        return
+        if self.player.swap:
+            debug(f'{self.player.swap=}')
+            self.player.swap = False
+            self.player.swap_image(self.cpu)
+            return
+
+        if self.player.start_move:
+            debug(f'{self.player.start_move=}')
+            find_gem, _ = Check_Matching.check(self.board_manager.board)
+            debug(f'{find_gem=}')
+            if not find_gem:
+                self.screen_manager.debug_shuffle = True
+                self.shuffle_gems()
+                self.game_status = 'shuffle'
+                self.wait(4000)
+                return
+            self.player.start_move = False
+
+        if self.board_manager.get_swaping():
+            debug(f'{self.board_manager.get_swaping()=}')
+            self.player.end_move = True
+            self.wait(1000)
+            return
+
+        if self.player.end_move:
+            debug(f'{self.player.end_move=}')
+            self.player.end_move = False
+            self.player.start_move = True
+            if self.player.extra_move:
+                debug(f'{self.player.extra_move=}')
+                self.player.extra_move = False
+                self.player.end_move = False
+                self.wait(2000)
+                return            
+            self.current_player = 'CPU'
+            debug(f'{self.current_player=}')
+            self.cpu.swap = True
+            self.wait(2000)
 
     def cpu_playing(self):
-        from consts import SELECT, SWAP_DIRS
-        if not self.board_is_idle: return
-        if not self.ready_to_move: return
+        from consts import SWAP_DIRS
+        if not self.board_manager.board_is_idle: return
 
-        if self.cpu.start_move and self.cpu.swap:
-            self.cpu.swap = False
-            self.cpu.swap_image(self.player)
-            return
+        log('idle')
     
         if self.cpu.start_move:
-            self.cpu.start_move = False
+            if not self.game_status == 'start' and not self.game_status == 'shuffle':
+                self.player.swap_image(self.cpu)
+                log('CPU swaping image')
+            else:
+                log('play')
+                self.game_status = 'play'
             self.cpu.find_gem, self.cpu.find_direction = Check_Matching.check(self.board_manager.board)
             if not self.cpu.find_gem:
                 self.screen_manager.debug_shuffle = True
@@ -312,36 +361,88 @@ class GameManager():
                 self.wait(4000)
                 self.cpu.start_move = True
                 return
-            
-            self.board_manager.selected_gem1 = self.cpu.find_gem
-            Animation(self.board_manager.select_gem.select_group, self.cpu.find_gem.bpos.gfx_pos,
-                    SELECT.ANIM, SELECT.SPEED, SELECT.OFFSET, SELECT.LOOP)
+            self.cpu.start_move = False
+
+            self.board_manager.select_gem(self.cpu.find_gem)
             Swap_Dirs(self.board_manager.swapdir_group,
                     self.cpu.find_gem.bpos,
                     SWAP_DIRS.ANIM, SWAP_DIRS.OFFSET,
                     (self.cpu.find_direction))
             self.wait(500, loops=1)
+            return
+        
+        if not self.cpu.end_move:
+            swaped_gem = self.board_manager.board[int(self.cpu.find_gem.bpos.pos.x+self.cpu.find_direction[0])][int(self.cpu.find_gem.bpos.pos.y+self.cpu.find_direction[1])]
+            self.board_manager.select_gem(swaped_gem)
+            if self.cpu.extra_move:
+                self.cpu.extra_move = False
+                self.wait(2000)
+                return
+            self.cpu.end_move = True
+            self.wait(1000)
+            return
+
+        if self.board_manager.board_is_idle:
+            self.cpu.start_move = True
+            self.cpu.end_move = False
+            self.current_player = 'Player'
+            log(f'{self.current_player=}', '[bold violet]Player[/] is playing')
+            self.player.swap = True
+            self.swaping = False
+            self.player.start_move = True                  
+            self.wait(2000)
+
+
+
+        return
+        if self.cpu.start_move:
+            debug(f'{self.cpu.start_move=}')
+            self.cpu.swap = False
+            self.cpu.swap_image(self.player)            
+            self.cpu.start_move = False
+            self.cpu.find_gem, self.cpu.find_direction = Check_Matching.check(self.board_manager.board)
+            debug(f'{self.cpu.find_gem=}, {self.cpu.find_direction=}')
+            if not self.cpu.find_gem:
+                self.screen_manager.debug_shuffle = True
+                self.shuffle_gems()
+                self.game_status = 'shuffle'
+                self.wait(4000)
+                self.cpu.start_move = True
+                return
+            
+            self.board_manager.select_gem(self.cpu.find_gem)
+            debug('cpu selecting gem1...')
+            Swap_Dirs(self.board_manager.swapdir_group,
+                    self.cpu.find_gem.bpos,
+                    SWAP_DIRS.ANIM, SWAP_DIRS.OFFSET,
+                    (self.cpu.find_direction))
+            self.wait(500, loops=1)
+            return
         else:
             if not self.cpu.end_move:
-                self.board_manager.select_gem.try_select(self.board_manager.board[int(self.cpu.find_gem.bpos.pos.x+self.cpu.find_direction[0])][int(self.cpu.find_gem.bpos.pos.y+self.cpu.find_direction[1])], None)
+                gem = self.cpu.find_gem
+                direction = self.cpu.find_direction
+                self.board_manager.select_gem(self.board_manager.board[int(gem.bpos.pos.x+direction[0])][int(gem.bpos.pos.y+direction[1])], True)
+                debug('cpu selecting gem2...')
                 if self.cpu.extra_move:
-                    self.cpu.start_move = True
                     self.cpu.extra_move = False
                     self.wait(2000)
                     return
                 self.cpu.end_move = True
                 self.wait(1000)
-                return
+                #return
 
         if not self.cpu.end_move: return
 
-        self.cpu.start_move = True
-        self.cpu.end_move = False
-        self.current_player = 'Player'
-        self.player.swap = True                    
-        self.wait(2000)
+        if self.board_manager.board_is_idle:
+            self.cpu.start_move = True
+            self.cpu.end_move = False
+            self.current_player = 'Player'
+            self.player.swap = True                    
+            self.wait(2000)
 
     def take_damage(self, current_player: Player, opponent: Player):
+        debug(self.current_player)
         current_player.damage = len(self.board_manager.gems_killed)
         matching = len(self.board_manager.gems_killed)
         if matching == 4:
@@ -368,7 +469,7 @@ class GameManager():
                   5,
                   size_direction='grow',
                   fade_direction='Out')
-        self.board_manager.rearange_board(self.board_manager.shuffle_board())
+        self.board_manager.shuffle_board()
         self.game_status = 'shuffle'
 
     def print_screen(self):

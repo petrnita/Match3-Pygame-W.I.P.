@@ -3,6 +3,8 @@ from pygame.math import Vector2 as vec
 from consts import SELECT
 from sprites import Animation
 
+from debug import debug
+
 class Select_Gem():
     def __init__(self, group: GroupSingle):
         from game_assets import Gem
@@ -65,13 +67,13 @@ class Select_Gem():
     def is_neighbor(self, gem) -> bool:
         if not gem: return False
         if not self.selected_gem1: return False
-        if self._selected_gem1.bpos.pos - gem.bpos.pos in [vec(-1, 0), vec(1, 0), vec(0, -1), vec(0, 1)]:
+        if self._selected_gem1.pos - gem.pos in [vec(-1, 0), vec(1, 0), vec(0, -1), vec(0, 1)]:
             return True
         return False
     
     def _select(self):
         Animation(self._select_group,
-                  self._selected_gem1.bpos.gfx_pos,
+                  self._selected_gem1.gpos,
                   SELECT.ANIM,
                   SELECT.SPEED,
                   SELECT.OFFSET,

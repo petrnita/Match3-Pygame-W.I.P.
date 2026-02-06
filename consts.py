@@ -3,7 +3,7 @@ from pygame import Surface, Rect
 from pygame.math import Vector2 as vec
 from pygame.mixer import Sound
 from sprites import ImageSheet
-
+from rich import print as print
 pygame.init()
 pygame.mixer.init()
 
@@ -16,13 +16,13 @@ class Slices():
             data = json.load(file)
         positions = {}
         rects = {}
-        for d in data['meta']['slices']:
-            bounds = d['keys'][0]['bounds']
-            positions[d['name']] = vec(bounds['x'], bounds['y'])
-            rects[d['name']] = Rect(bounds['x'],
-                                    bounds['y'],
-                                    bounds['w'],
-                                    bounds['h'])      
+        for slice in data['meta']['slices']:
+            bounds = slice['keys'][0]['bounds']
+            positions[slice['name']] = vec(bounds['x'], bounds['y'])
+            rects[slice['name']] = Rect(bounds['x'],
+                                        bounds['y'],
+                                        bounds['w'],
+                                        bounds['h'])      
         return [positions, rects]
     
     @classmethod
@@ -32,16 +32,14 @@ class Slices():
             data = json.load(file)
         pictures = {}
         rects = {}
-        for d in data['meta']['slices']:
-            bounds = d['keys'][0]['bounds']
-            pictures[d['name']] = Surface.subsurface(picture, Rect(bounds['x'],
-                                                                   bounds['y'],
-                                                                   bounds['w'],
-                                                                   bounds['h']))
-            rects[d['name']] = Rect(bounds['x'],
-                                    bounds['y'],
-                                    bounds['w'],
-                                    bounds['h'])
+        for slice in data['meta']['slices']:
+            bounds = slice['keys'][0]['bounds']
+            rect = Rect(bounds['x'],
+                        bounds['y'],
+                        bounds['w'],
+                        bounds['h'])
+            pictures[slice['name']] = Surface.subsurface(picture, rect)
+            rects[slice['name']] = rect
         return [pictures, rects]
 
 
@@ -119,6 +117,7 @@ class Txt_Props():
 
 GEMS_KILLED_EVENT = pygame.USEREVENT + 1
 BOARD_IS_IDLE_EVENT = pygame.USEREVENT + 2
+SWAPING_EVENT = pygame.USEREVENT + 3
 
 SCREEN = Screen_Layout()
 
